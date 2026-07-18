@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#28a745">
   <meta name="description" content="KrishiDakshina – Farm-fresh groceries delivered to your doorstep. Organic produce, dairy, and pantry essentials.">
   <meta name="keywords" content="grocery delivery, organic, fresh produce, farm to table, KrishiDakshina, India">
   <meta name="author" content="KrishiDakshina">
@@ -611,20 +612,20 @@
           <div class="row2">
             <div class="fg">
               <label for="fn">First Name *</label>
-              <input type="text" id="fn" placeholder="Priya" required>
+              <input type="text" id="fn" placeholder="Priya" autocomplete="given-name" maxlength="50" required>
             </div>
             <div class="fg">
               <label for="ln">Last Name</label>
-              <input type="text" id="ln" placeholder="Sharma">
+              <input type="text" id="ln" placeholder="Sharma" autocomplete="family-name" maxlength="50">
             </div>
           </div>
           <div class="fg">
             <label for="em">Email Address *</label>
-            <input type="email" id="em" placeholder="priya@example.com" required>
+            <input type="email" id="em" placeholder="priya@example.com" autocomplete="email" inputmode="email" maxlength="100" required>
           </div>
           <div class="fg">
             <label for="ph">Phone Number</label>
-            <input type="tel" id="ph" placeholder="+91 98765 43210">
+            <input type="tel" id="ph" placeholder="+91 98765 43210" autocomplete="tel" inputmode="tel" maxlength="20">
           </div>
           <div class="fg">
             <label for="sub">Subject</label>

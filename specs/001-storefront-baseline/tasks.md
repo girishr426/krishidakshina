@@ -170,6 +170,8 @@ Every task cites (a) the principle it satisfies, (b) the acceptance criterion or
 - [ ] T006 [P] Run **axe-core** locally against `index.html` (served through `python -m http.server` or `npx serve`); capture every violation with severity; remediate all **serious**/**critical**; write the report to [specs/001-storefront-baseline/audits/a11y-<YYYY-MM-DD>.md](./audits/) including the axe-core version, URL, viewport, and remediation notes for each finding. **Principle**: P-I + P-VI clause 3. **Deferred ID**: `P-I AUDIT`. **Acceptance**: [spec.md `SC-004`](./spec.md) (zero serious/critical). **Test evidence**: the `audits/a11y-<date>.md` file itself + axe JSON checked into the same folder. **Size**: M. **Depends on**: none (can run in parallel with T001/T009). Runs against `index.html`, does not edit it.
 - [ ] T007 Manual **keyboard-only walkthrough** covering the full flow: nav links → hero CTAs → product-grid `+` buttons → cart-icon → drawer qty controls → delivery-form fields → "Use my current location" → "Order via WhatsApp" → contact form. Every unreachable control or focus-trap finding becomes a follow-up task appended to Section B under its owning story. Record findings in [specs/001-storefront-baseline/audits/keyboard-<YYYY-MM-DD>.md](./audits/). **Principle**: P-I clauses 2–3 (WCAG 2.4.11, 2.4.13). **Deferred ID**: `P-I AUDIT`. **Acceptance**: [spec.md `FR-004`](./spec.md). **Test evidence**: `audits/keyboard-<date>.md` with pass/fail per control. **Size**: M. **Depends on**: T006 (fix trivial a11y issues first so the walk isn't dominated by low-hanging fruit).
 - [ ] T008 [P] Verify the page at **200% zoom** and **400% zoom** in Chrome + Firefox; confirm no critical content clips or reflow-breaks (per WCAG 1.4.10). Record screenshots + findings in [specs/001-storefront-baseline/audits/zoom-<YYYY-MM-DD>.md](./audits/). **Principle**: P-I ("MUST remain usable at 200% zoom"). **Deferred ID**: `P-I AUDIT`. **Acceptance**: [spec.md `FR-004`](./spec.md). **Test evidence**: `audits/zoom-<date>.md` with 200 % + 400 % screenshots. **Size**: S. **Depends on**: none.
+- [x] **DONE 2026-07-18** T008a [US6] Mobile-first CSS refactor + touch-target + input-attribute hygiene. Rewrote [index.css](../../index.css) responsive layer from **desktop-first `max-width`** (3 blocks) to **mobile-first `min-width`** (3 tiers: ≥481px, ≥769px, ≥1025px). Every layout that had a multi-column desktop default (`.hero-grid`, `.about-grid`, `.contact-grid`, `.row2`, `.rev-grid`, `.prod-grid`, `.highlights`, `.footer-top`, `.strip-row`, `.prod-hd`) now defaults to 1-col on phones and progressively adds columns via `min-width` queries. Elements previously visible-then-hidden on mobile (`.hero-vis`, `.about-vis`, `.nav-links`, `.nav-cta`) now default to `display:none` and reveal at ≥769px; `.hb` (hamburger) defaults visible and hides at ≥769px. Concrete defect fixes bundled: (a) `.qty-btn` in cart drawer bumped **26×26→ 36×36 px** (WCAG 2.5.5 headroom); (b) `.hb` hamburger gets `min-width:44px; min-height:44px` (WCAG 2.5.5 AAA); (c) [index.html](../../index.html) contact-form inputs (`#fn`, `#ln`, `#em`, `#ph`) gained `autocomplete="given-name|family-name|email|tel"` and `inputmode="email|tel"` matching the delivery-form pattern; (d) `<meta name="theme-color" content="#28a745">` added for Android/PWA browser-chrome color. **Principle**: P-I (mobile viewport support + touch targets) + P-II (single-CSS payload, no framework). **Deferred ID**: `P-I AUDIT`. **Acceptance**: [spec.md `FR-004`](./spec.md) + `SC-004`. **Test evidence**: post-change grep shows zero `max-width` media queries in [index.css](../../index.css); manual smoke-test at 360×640, 414×896, 768×1024, 1440×900. **Size**: L. **Depends on**: T006 (a11y baseline). **Follow-up**: T008b below tracks the axe/Lighthouse re-run after this refactor.
+- [ ] T008b [US6] Re-run axe-core + Lighthouse mobile after the T008a mobile-first refactor to confirm no regression in a11y score and to capture the new mobile-viewport performance numbers. Append to the same `audits/a11y-<date>.md` and `audits/perf-<date>.md` files (Phase B3 T009). **Principle**: P-VI clauses 2–3. **Deferred ID**: `P-I AUDIT`, `P-II BASELINE`. **Acceptance**: no new serious/critical a11y findings; LCP ≤ T009 baseline. **Test evidence**: appended audit sections. **Size**: S. **Depends on**: T006, T009, T008a (DONE).
 
 **Checkpoint B2**: `audits/` folder holds the three signed reports; Principle I is auditable per release, not just aspirational.
 
@@ -257,6 +259,10 @@ flowchart TD
   T006[T006 axe local]
   T006 --> T007[T007 keyboard walk]
   T008[T008 zoom test]
+  T008a[T008a mobile-first — DONE]
+  T006 --> T008a
+  T008a --> T008b[T008b axe/LH re-run]
+  T009 --> T008b
   T009[T009 Lighthouse local] --> T010[T010 loading=lazy]
   T010 --> T011[T011 width/height]
   T012[T012 XSS grep]
@@ -324,10 +330,10 @@ Each Section-B task is independently mergeable. Landing T001 alone already meani
 
 ## Section B totals
 
-- **Total tasks tracked**: 27 (T001 – T025 + T019a + T020a).
-- **Completed since baseline**: 3 (T016, T019, T020 — closed on 2026-07-18: T016/T019 by constitution v2.1.0, T020 by the contact-form WhatsApp handoff implementation).
-- **Outstanding tasks (unchecked)**: 24 (T001 – T015, T017, T018, T019a, T020a, T021 – T025).
-- **v1 release blockers (Phases B1–B5, unchecked)**: 18 (T001 – T015, T017, T018, T019a).
+- **Total tasks tracked**: 29 (T001 – T025 + T019a + T020a + T008a + T008b).
+- **Completed since baseline**: 4 (T016, T019, T020, T008a — all closed on 2026-07-18).
+- **Outstanding tasks (unchecked)**: 25 (T001 – T008, T008b, T009 – T015, T017, T018, T019a, T020a, T021 – T025).
+- **v1 release blockers (Phases B1–B5, unchecked)**: 19 (T001 – T008, T008b, T009 – T015, T017, T018, T019a).
 - **v1 decisions with recorded outcomes (Phase B4)**: 1 (T015).
 - **Documentation (Phase B7)**: 2 (T021, T022).
 - **Post-v1 / stretch (Phase B6 T020a + Phase B8)**: 4 (T020a, T023 – T025).
