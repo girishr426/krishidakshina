@@ -427,6 +427,16 @@ h1.hero-h1 .hl {
   font-size:.88rem; font-weight:700; color:var(--green-dark);
   margin-top:.8rem; text-align:center;
 }
+#cf-err {
+  display:none; background:#fdecec; border:1px solid #f5c6c6;
+  border-radius:var(--r-sm); padding:.9rem 1.2rem;
+  font-size:.88rem; font-weight:700; color:#b91c1c;
+  margin-top:.8rem; text-align:center;
+}
+.cf-note {
+  font-size:.78rem; color:var(--muted); text-align:center;
+  margin-top:.6rem; line-height:1.5;
+}
 
 /* ════════════════════════════
    FOOTER
