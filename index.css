@@ -244,35 +244,45 @@ h1.hero-h1 .hl {
   .strip-item:hover .strip-ico { transform:none; box-shadow:none; }
 }
 
-/* ════════════════════════════
-   PRODUCTS
+/* ══════════════════════════
+   PRODUCTS — mobile-first compact tile (Direction B).
+   Base rules target phone: 2 compact tiles per row, square image,
+   name+price only. Refined at ≥481px, restored to rich card at ≥769px.
 ═══════════════════════════ */
 #products { background:var(--bg); }
-.prod-hd { display:flex; flex-direction:column; align-items:flex-start; flex-wrap:wrap; gap:1rem; margin-bottom:2.5rem; }
-.prod-grid { display:grid; grid-template-columns:1fr; gap:1.5rem; }
+.prod-hd  { display:flex; flex-direction:column; align-items:flex-start; flex-wrap:wrap; gap:1rem; margin-bottom:1.8rem; }
+
+/* Base = phones: 2 compact tiles per row */
+.prod-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:.75rem; }
 
 .pcard {
   background:var(--white); border:1px solid var(--border);
-  border-radius:var(--r-lg); overflow:hidden; position:relative;
+  border-radius:14px; overflow:hidden; position:relative;
+  display:flex; flex-direction:column;
   transition:transform var(--ease),box-shadow var(--ease),border-color var(--ease);
 }
-.pcard:hover { transform:translateY(-7px); box-shadow:var(--sh-lg); border-color:#b2dfdb; }
 
+/* Badge — smaller on mobile, still top-left overlay */
 .pbadge {
-  position:absolute; top:12px; left:12px; z-index:2;
-  font-size:.66rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em;
-  padding:.24rem .6rem; border-radius:6px; color:var(--white);
+  position:absolute; top:8px; left:8px; z-index:2;
+  font-size:.6rem; font-weight:800; text-transform:uppercase; letter-spacing:.05em;
+  padding:.18rem .45rem; border-radius:5px; color:var(--white);
+  box-shadow:0 1px 4px rgba(0,0,0,.15);
 }
 .pbadge.org  { background:var(--green); }
 .pbadge.hot  { background:var(--accent); }
 .pbadge.sea  { background:var(--amber); }
 
+/* Square image — scales with card width (no fixed pixel height) */
 .pimg {
-  height:200px; display:flex; align-items:center; justify-content:center;
-  font-size:4.5rem; overflow:hidden;
+  aspect-ratio:1;
+  display:flex; align-items:center; justify-content:center;
+  font-size:3rem; overflow:hidden;
   transition:transform var(--ease);
 }
-.pcard:hover .pimg { transform:scale(1.05); }
+.pimg img { width:100%; height:100%; object-fit:cover; display:block; }
+
+/* Pastel per-card backgrounds (unchanged) */
 .pcard:nth-child(1)  .pimg { background:linear-gradient(135deg,#fff0f0,#ffdada); }
 .pcard:nth-child(2)  .pimg { background:linear-gradient(135deg,#fffff0,#fdf5b0); }
 .pcard:nth-child(3)  .pimg { background:linear-gradient(135deg,#f0fff5,#c4f5d8); }
@@ -285,26 +295,53 @@ h1.hero-h1 .hl {
 .pcard:nth-child(10) .pimg { background:linear-gradient(135deg,#f5fff0,#b8f0c0); }
 .pcard:nth-child(11) .pimg { background:linear-gradient(135deg,#fdf5ff,#e8c0f8); }
 .pcard:nth-child(12) .pimg { background:linear-gradient(135deg,#fff5e0,#ffd080); }
-/* Image inside product card */
-.pimg img { width:100%; height:100%; object-fit:cover; display:block; }
 
-.pbody   { padding:1.15rem 1.25rem 1.3rem; }
-.pcat    { display:inline-block; background:var(--green-light); color:var(--green-dark); font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; padding:.2rem .52rem; border-radius:4px; margin-bottom:.55rem; }
-.pname   { font-size:1.02rem; font-weight:800; color:var(--dark); margin-bottom:.35rem; line-height:1.3; }
-.pdesc   { font-size:.8rem; color:var(--muted); line-height:1.55; margin-bottom:.95rem; }
-.pfoot   { display:flex; align-items:center; justify-content:space-between; }
-.pprice  { font-size:1.18rem; font-weight:900; color:var(--green-dark); }
-.pprice small { font-size:.73rem; color:var(--muted); font-weight:400; margin-left:2px; }
+/* Body — compact on phones */
+.pbody { padding:.65rem .7rem .75rem; display:flex; flex-direction:column; flex:1; }
 
+/* Category chip + description hidden on phones (noise vs. thumb-scanning) */
+.pcat  { display:none; }
+.pdesc { display:none; }
+
+/* Name — clamp to 2 lines so tall names don't blow up card height */
+.pname {
+  font-size:.86rem; font-weight:800; color:var(--dark);
+  line-height:1.25; margin-bottom:.4rem;
+  display:-webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient:vertical;
+  overflow:hidden; text-overflow:ellipsis;
+  min-height:calc(1.25em * 2);
+  text-wrap:balance;
+}
+
+/* Foot: price left, big add button right */
+.pfoot  { display:flex; align-items:center; justify-content:space-between; margin-top:auto; gap:.4rem; }
+.pprice { font-size:.95rem; font-weight:900; color:var(--green-dark); line-height:1; white-space:nowrap; }
+.pprice small { font-size:.65rem; color:var(--muted); font-weight:500; margin-left:1px; display:block; margin-top:2px; }
+
+/* Add button — 44×44 touch target (WCAG 2.5.5 AAA) on mobile */
 .btn-add {
-  width:36px; height:36px; border-radius:10px;
+  width:44px; height:44px; border-radius:12px;
   background:linear-gradient(135deg,var(--green),var(--teal));
   color:var(--white); border:none; cursor:pointer;
-  display:flex; align-items:center; justify-content:center; font-size:.95rem;
-  transition:all var(--ease); box-shadow:0 2px 8px rgba(40,167,69,.28);
+  display:flex; align-items:center; justify-content:center;
+  font-size:1rem; flex-shrink:0;
+  transition:transform var(--ease),box-shadow var(--ease);
+  box-shadow:0 2px 8px rgba(40,167,69,.28);
 }
-.btn-add:hover { transform:scale(1.14); box-shadow:0 5px 16px rgba(40,167,69,.45); }
-.btn-add--ok   { background:linear-gradient(135deg,var(--green-dark),#13795f) !important; }
+.btn-add--ok { background:linear-gradient(135deg,var(--green-dark),#13795f) !important; }
+
+/* Desktop-only hover — never fires on touch, prevents sticky :hover on tap */
+@media (hover: hover) {
+  .pcard:hover        { transform:translateY(-7px); box-shadow:var(--sh-lg); border-color:#b2dfdb; }
+  .pcard:hover .pimg  { transform:scale(1.05); }
+  .btn-add:hover      { transform:scale(1.14); box-shadow:0 5px 16px rgba(40,167,69,.45); }
+}
+
+/* Touch feedback — quick compress on tap */
+@media (hover: none) {
+  .pcard:active   { transform:scale(.98); transition-duration:.1s; }
+  .btn-add:active { transform:scale(.92); transition-duration:.1s; }
+}
 
 /* ════════════════════════════
    ABOUT
@@ -592,10 +629,26 @@ footer { background:var(--dark); color:rgba(255,255,255,.55); }
 /* ≥481px — first tier: pair up 1-col grids that fit two side-by-side */
 @media (min-width: 481px) {
   .container   { padding:0 1.5rem; }
-  .prod-grid   { grid-template-columns:repeat(2,1fr); }
+  .prod-grid   { grid-template-columns:repeat(2,1fr); gap:1rem; }
   .footer-top  { grid-template-columns:1fr 1fr; gap:2.5rem; }
   .highlights  { grid-template-columns:1fr 1fr; }
   .row2        { grid-template-columns:1fr 1fr; }
+
+  /* Product card — small-tablet refinements: roomier padding + re-introduce category + description */
+  .pbody   { padding:.9rem 1rem 1rem; }
+  .pname   { font-size:.95rem; }
+  .pprice  { font-size:1.05rem; }
+  .pprice small { font-size:.7rem; display:inline; margin-top:0; }
+  .pdesc   {
+    display:-webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+    font-size:.78rem; color:var(--muted); line-height:1.5; margin-bottom:.75rem;
+  }
+  .pcat    {
+    display:inline-block; align-self:flex-start;
+    background:var(--green-light); color:var(--green-dark);
+    font-size:.62rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em;
+    padding:.15rem .45rem; border-radius:4px; margin-bottom:.4rem;
+  }
 }
 
 /* ≥769px — second tier: full desktop layout begins.
@@ -632,6 +685,24 @@ footer { background:var(--dark); color:rgba(255,255,255,.55); }
   /* Contact */
   .contact-grid  { grid-template-columns:1fr 1.45fr; gap:3rem; }
   .cform-wrap    { padding:2.2rem 2.4rem; }
+
+  /* Product card — restore desktop-rich look */
+  .prod-hd       { margin-bottom:2.5rem; }
+  .prod-grid     { gap:1.5rem; }
+  .pcard         { border-radius:var(--r-lg); }
+  .pimg          { aspect-ratio:auto; height:200px; font-size:4.5rem; }
+  .pbody         { padding:1.15rem 1.25rem 1.3rem; }
+  .pname         {
+    font-size:1.02rem; line-height:1.3; margin-bottom:.35rem;
+    -webkit-line-clamp:unset; line-clamp:unset; min-height:0; text-wrap:auto;
+    display:block; overflow:visible;
+  }
+  .pprice        { font-size:1.18rem; }
+  .pprice small  { font-size:.73rem; }
+  .pbadge        { top:12px; left:12px; font-size:.66rem; font-weight:700; padding:.24rem .6rem; border-radius:6px; box-shadow:none; }
+  .btn-add       { width:36px; height:36px; border-radius:10px; font-size:.95rem; }
+  .pcat          { font-size:.68rem; padding:.2rem .52rem; margin-bottom:.55rem; letter-spacing:.08em; }
+  .pdesc         { -webkit-line-clamp:unset; line-clamp:unset; overflow:visible; margin-bottom:.95rem; font-size:.8rem; line-height:1.55; }
 }
 
 /* ≥1025px — third tier: maximum column density on wide viewports */
