@@ -89,7 +89,7 @@ const io = new IntersectionObserver((entries) => {
 document.querySelectorAll('.fi').forEach(el => io.observe(el));
 
 /* ── CART SYSTEM + WHATSAPP ORDER ── */
-const WHATSAPP_NUMBER = '919876543210'; // <- replace with your WhatsApp business number
+const WHATSAPP_NUMBER = '918970059754'; // <- replace with your WhatsApp business number
 
 // Cart persists in localStorage so items survive page reloads / new tabs.
 // Storage is per-browser (each visitor has their own cart – multi-user safe).
