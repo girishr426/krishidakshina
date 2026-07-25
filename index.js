@@ -1,5 +1,5 @@
 /* ---------------------------------------------------------------------------
-   Gut Point storefront – client-side script.
+   KrishiDakshina storefront – client-side script.
    Extracted from static/index.html so the page's Content-Security-Policy can
    drop 'unsafe-inline' from script-src (blocks injected inline scripts and
    inline event-handler attributes).
@@ -93,7 +93,9 @@ const WHATSAPP_NUMBER = '919876543210'; // <- replace with your WhatsApp busines
 
 // Cart persists in localStorage so items survive page reloads / new tabs.
 // Storage is per-browser (each visitor has their own cart – multi-user safe).
-const CART_STORAGE_KEY = 'gutpoint.cart.v1';
+// NOTE: namespace 'krishidakshina.*' matches the site brand; the v1 suffix is
+// the schema version — any shape change bumps to .v2 with a migrate/reset path.
+const CART_STORAGE_KEY = 'krishidakshina.cart.v1';
 const MAX_QTY_PER_ITEM = 99;   // guard against tampered qty (abuse / giant WhatsApp text)
 const MAX_CART_ITEMS   = 50;   // guard against tampered storage adding hundreds of rows
 const MAX_NAME_LEN     = 200;
@@ -311,7 +313,7 @@ document.getElementById('btnClearCart').addEventListener('click', () => {
      • pincode lookup restricted by CSP connect-src allow-list
      • geolocation is opt-in (button-triggered), not auto-requested
    ──────────────────────────────────────────────────────────────── */
-const CUSTOMER_STORAGE_KEY = 'gutpoint.customer.v1';
+const CUSTOMER_STORAGE_KEY = 'krishidakshina.customer.v1';
 const MAX_CNAME_LEN = 100;
 const MAX_ADDR_LEN  = 200;
 const MAX_CITY_LEN  = 100;
@@ -522,7 +524,7 @@ document.getElementById('btnWaOrder').addEventListener('click', () => {
     : '';
 
   const msg =
-    `\uD83D\uDED2 *New Order \u2013 Gut Point*\n\n` +
+    `\uD83D\uDED2 *New Order \u2013 KrishiDakshina*\n\n` +
     `*Customer*\n` +
     `Name : ${dName.value.trim()}\n` +
     `Phone: +91 ${phone}\n\n` +
@@ -543,26 +545,86 @@ document.getElementById('btnWaOrder').addEventListener('click', () => {
   );
 });
 
-/* ── Contact form ── */
+/* ── Contact form (Option C: WhatsApp handoff) ──
+   Constitution v2.1.0 P-V (Client-Only Architecture): no backend, no third-party
+   form endpoint. Enquiries are handed off to WhatsApp using the same pattern as
+   the order flow. Any migration off this handoff requires a MINOR constitution
+   amendment + CSP allow-list update + declared anti-spam mechanism. */
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 document.getElementById('cf').addEventListener('submit', function (e) {
   e.preventDefault();
+
   const fn  = document.getElementById('fn').value.trim();
+  const ln  = document.getElementById('ln').value.trim();
   const em  = document.getElementById('em').value.trim();
+  const ph  = document.getElementById('ph').value.trim();
+  const sub = document.getElementById('sub').value.trim();
   const msg = document.getElementById('msg').value.trim();
-  if (!fn || !em || !msg) { alert('Please fill in your name, email, and message.'); return; }
+
+  const errEl = document.getElementById('cf-err');
+  const okEl  = document.getElementById('form-ok');
+  const showErr = (t) => {
+    errEl.textContent = t;
+    errEl.style.display = 'block';
+    okEl.style.display  = 'none';
+  };
+  errEl.style.display = 'none';
+  okEl.style.display  = 'none';
+
+  // Required fields
+  if (!fn)  return showErr('Please enter your first name.');
+  if (!em)  return showErr('Please enter your email address.');
+  if (!msg) return showErr('Please write a message.');
+
+  // Basic email shape (client-side only)
+  if (!EMAIL_RE.test(em)) {
+    return showErr('That email does not look right — please double-check.');
+  }
+
+  // Optional phone — if supplied, must match Indian mobile pattern
+  const phoneClean = ph ? normalizePhone(ph) : '';
+  if (ph && !isValidPhone(ph)) {
+    return showErr('Phone should be a 10-digit Indian mobile starting with 6-9.');
+  }
+
+  // Build WhatsApp message
+  const nameLine = ln ? `${fn} ${ln}` : fn;
+  const waMsg =
+    `\uD83D\uDCAC *New Enquiry \u2013 KrishiDakshina*\n\n` +
+    `*From*\n` +
+    `Name : ${nameLine}\n` +
+    `Email: ${em}\n` +
+    (phoneClean ? `Phone: +91 ${phoneClean}\n` : '') +
+    `\n*Topic*: ${sub || 'General Enquiry'}\n\n` +
+    `*Message*\n${msg}`;
+
+  const encoded = encodeURIComponent(waMsg);
+  if (encoded.length > MAX_MSG_LEN) {
+    return showErr('Message is too long — please shorten and try again.');
+  }
+
   const btn = this.querySelector('.btn-send');
   btn.disabled = true;
   setBtnIcon(btn, 'fa-solid fa-spinner fa-spin');
-  btn.append(' Sending\u2026');
+  btn.append(' Opening WhatsApp\u2026');
+
+  const win = window.open(
+    `https://wa.me/${WHATSAPP_NUMBER}?text=${encoded}`,
+    '_blank', 'noopener,noreferrer'
+  );
+
   setTimeout(() => {
-    this.reset();
     btn.disabled = false;
-    setBtnIcon(btn, 'fa-solid fa-paper-plane');
-    btn.append(' Send Message');
-    const ok = document.getElementById('form-ok');
-    ok.style.display = 'block';
-    setTimeout(() => { ok.style.display = 'none'; }, 5000);
-  }, 1200);
+    setBtnIcon(btn, 'fa-brands fa-whatsapp');
+    btn.append(' Send via WhatsApp');
+    if (win) {
+      this.reset();
+      okEl.style.display = 'block';
+      setTimeout(() => { okEl.style.display = 'none'; }, 6000);
+    } else {
+      showErr('Could not open WhatsApp. Please allow pop-ups or use the "Chat on WhatsApp" button.');
+    }
+  }, 300);
 });
 
 /* ── Hero particles (decorative – uses CSPRNG helper) ── */
