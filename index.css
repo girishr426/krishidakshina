@@ -207,7 +207,6 @@ h1.hero-h1 .hl {
 }
 .chip-em { font-size:1.15rem; }
 .chip-sub{ font-size:.7rem; color:var(--muted); font-weight:400; margin-top:.05rem; }
-.chip-1 { top:-18px; right:16px; animation:flt 4s ease-in-out infinite; }
 .chip-2 { bottom:44px; left:-28px; animation:flt 4s 1.5s ease-in-out infinite; }
 @keyframes flt { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
 
