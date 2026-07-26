@@ -107,7 +107,7 @@
         </h1>
         <p class="hero-sub">
           From sun-kissed produce to pantry staples — KrishiDakshina delivers
-          farm-fresh quality to your kitchen, every single day.
+          farm-fresh quality to your kitchen.
         </p>
         <div class="hero-btns">
           <a href="#products" class="btn btn-primary">
@@ -742,59 +742,82 @@
     </div>
   </div>
   <div class="cart-foot is-hidden" id="cartFoot">
-    <!-- Delivery details (persisted in localStorage under krishidakshina.customer.v1) -->
-    <div class="deliv-form" id="delivForm">
-      <div class="deliv-title">
-        <i class="fa-solid fa-truck-fast cart-title-ico"></i>Delivery details
-      </div>
-      <div class="deliv-fields">
-        <div class="deliv-fg">
-          <label for="dName">Name *</label>
-          <input id="dName" type="text" maxlength="100" autocomplete="name" required>
-        </div>
-        <div class="deliv-fg">
-          <label for="dPhone">Phone *</label>
-          <input id="dPhone" type="tel" inputmode="tel" maxlength="20" autocomplete="tel" placeholder="10-digit mobile" required>
-        </div>
-        <div class="deliv-fg deliv-fg--full">
-          <label for="dAddr1">Address line 1 *</label>
-          <input id="dAddr1" type="text" maxlength="200" autocomplete="address-line1" required>
-        </div>
-        <div class="deliv-fg deliv-fg--full">
-          <label for="dAddr2">Landmark / apt (optional)</label>
-          <input id="dAddr2" type="text" maxlength="200" autocomplete="address-line2">
-        </div>
-        <div class="deliv-fg">
-          <label for="dPincode">Pincode *</label>
-          <input id="dPincode" type="text" inputmode="numeric" maxlength="6" autocomplete="postal-code" pattern="[1-9][0-9]{5}" required>
-        </div>
-        <div class="deliv-fg">
-          <label for="dCity">City *</label>
-          <input id="dCity" type="text" maxlength="100" autocomplete="address-level2" required>
-        </div>
-        <div class="deliv-fg deliv-fg--full">
-          <label for="dNotes">Delivery notes (optional)</label>
-          <textarea id="dNotes" maxlength="500" rows="2" placeholder="Gate code, floor, best time…"></textarea>
-        </div>
-      </div>
-      <button type="button" class="btn-geo" id="btnGeo">
-        <i class="fa-solid fa-location-crosshairs"></i>
-        <span id="geoLabel">Use my current location</span>
-      </button>
-      <p class="deliv-hint" id="delivHint"><output aria-live="polite"></output></p>
+    <div class="checkout-steps" aria-label="Checkout steps">
+      <button class="step-chip is-active" id="stepReview" type="button" aria-controls="cartReviewPanel" aria-pressed="true">1. Cart</button>
+      <button class="step-chip" id="stepDelivery" type="button" aria-controls="cartDeliveryPanel" aria-pressed="false">2. Delivery</button>
     </div>
 
-    <div class="cart-total">
-      <span>Total</span>
-      <span id="cartTotal">&#8377;0</span>
+    <div id="cartReviewPanel">
+      <div class="cart-total">
+        <span>Total</span>
+        <span id="cartTotal">&#8377;0</span>
+      </div>
+      <button class="btn-review-next" id="btnToDelivery" type="button">
+        <i class="fa-solid fa-truck-fast"></i>
+        Confirm Items &amp; Continue
+      </button>
+      <button class="btn-clear-cart" id="btnClearCart" type="button">
+        <i class="fa-solid fa-trash-can"></i> Clear cart
+      </button>
     </div>
-    <button class="btn-wa-order" id="btnWaOrder" disabled>
-      <i class="fa-brands fa-whatsapp wa-ico-md"></i>
-      Place Order via WhatsApp
-    </button>
-    <button class="btn-clear-cart" id="btnClearCart">
-      <i class="fa-solid fa-trash-can"></i> Clear cart
-    </button>
+
+    <div class="is-hidden" id="cartDeliveryPanel">
+      <div class="deliv-summary">
+        <span>Order Total</span>
+        <strong id="cartTotalDelivery">&#8377;0</strong>
+      </div>
+
+      <!-- Delivery details (persisted in localStorage under krishidakshina.customer.v1) -->
+      <div class="deliv-form" id="delivForm">
+        <div class="deliv-title">
+          <i class="fa-solid fa-truck-fast cart-title-ico"></i>Delivery details
+        </div>
+        <div class="deliv-fields">
+          <div class="deliv-fg">
+            <label for="dName">Name *</label>
+            <input id="dName" type="text" maxlength="100" autocomplete="name" required>
+          </div>
+          <div class="deliv-fg">
+            <label for="dPhone">Phone *</label>
+            <input id="dPhone" type="tel" inputmode="tel" maxlength="20" autocomplete="tel" placeholder="10-digit mobile" required>
+          </div>
+          <div class="deliv-fg deliv-fg--full">
+            <label for="dAddr1">Address line 1 *</label>
+            <input id="dAddr1" type="text" maxlength="200" autocomplete="address-line1" required>
+          </div>
+          <div class="deliv-fg deliv-fg--full">
+            <label for="dAddr2">Landmark / apt (optional)</label>
+            <input id="dAddr2" type="text" maxlength="200" autocomplete="address-line2">
+          </div>
+          <div class="deliv-fg">
+            <label for="dPincode">Pincode *</label>
+            <input id="dPincode" type="text" inputmode="numeric" maxlength="6" autocomplete="postal-code" pattern="[1-9][0-9]{5}" required>
+          </div>
+          <div class="deliv-fg">
+            <label for="dCity">City *</label>
+            <input id="dCity" type="text" maxlength="100" autocomplete="address-level2" required>
+          </div>
+          <div class="deliv-fg deliv-fg--full">
+            <label for="dNotes">Delivery notes (optional)</label>
+            <textarea id="dNotes" maxlength="500" rows="2" placeholder="Gate code, floor, best time…"></textarea>
+          </div>
+        </div>
+        <button type="button" class="btn-geo" id="btnGeo">
+          <i class="fa-solid fa-location-crosshairs"></i>
+          <span id="geoLabel">Use my current location</span>
+        </button>
+        <p class="deliv-hint" id="delivHint"><output aria-live="polite"></output></p>
+      </div>
+
+      <button class="btn-wa-order" id="btnWaOrder" disabled>
+        <i class="fa-brands fa-whatsapp wa-ico-md"></i>
+        Place Order via WhatsApp
+      </button>
+      <button class="btn-back-cart" id="btnBackToCart" type="button">
+        <i class="fa-solid fa-arrow-left"></i>
+        Back to cart items
+      </button>
+    </div>
   </div>
 </div>
 

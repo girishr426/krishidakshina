@@ -149,8 +149,65 @@ function saveCart() {
 
 const cartDrawer  = document.getElementById('cartDrawer');
 const cartOverlay = document.getElementById('cartOverlay');
+const cartItemsEl = document.getElementById('cartItems');
+const cartEmptyEl = document.getElementById('cartEmpty');
+const cartFootEl  = document.getElementById('cartFoot');
+const cartTotalEl = document.getElementById('cartTotal');
+const cartTotalDeliveryEl = document.getElementById('cartTotalDelivery');
+const cartReviewPanel = document.getElementById('cartReviewPanel');
+const cartDeliveryPanel = document.getElementById('cartDeliveryPanel');
+const stepReview = document.getElementById('stepReview');
+const stepDelivery = document.getElementById('stepDelivery');
+const btnToDelivery = document.getElementById('btnToDelivery');
+const btnBackToCart = document.getElementById('btnBackToCart');
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-function openCart()  { cartDrawer.classList.add('o'); cartOverlay.classList.add('o'); document.body.style.overflow = 'hidden'; }
+let checkoutStep = 'review';
+
+function animatePanelIn(el) {
+  if (!el || prefersReducedMotion.matches) return;
+  el.classList.remove('panel-animate-in');
+  el.getBoundingClientRect();
+  el.classList.add('panel-animate-in');
+}
+
+function setCheckoutStep(step, opts = {}) {
+  const hasItems = Object.keys(cart).length > 0;
+  const nextStep = (step === 'delivery' && hasItems) ? 'delivery' : 'review';
+  if (step === 'delivery' && !hasItems && opts.warnWhenEmpty) {
+    setHint('Add at least one item in cart before entering delivery details.', 'err');
+  }
+  checkoutStep = nextStep;
+
+  const deliveryMode = checkoutStep === 'delivery';
+  cartDrawer.classList.toggle('delivery-step', deliveryMode);
+  cartItemsEl.classList.toggle('is-hidden', deliveryMode);
+  cartReviewPanel.classList.toggle('is-hidden', deliveryMode);
+  cartDeliveryPanel.classList.toggle('is-hidden', !deliveryMode);
+  stepReview.classList.toggle('is-active', !deliveryMode);
+  stepDelivery.classList.toggle('is-active', deliveryMode);
+  stepReview.setAttribute('aria-pressed', String(!deliveryMode));
+  stepDelivery.setAttribute('aria-pressed', String(deliveryMode));
+
+  if (deliveryMode) {
+    animatePanelIn(cartDeliveryPanel);
+    if (cartFootEl) cartFootEl.scrollTop = 0;
+  } else {
+    animatePanelIn(cartItemsEl);
+    animatePanelIn(cartReviewPanel);
+  }
+
+  if (deliveryMode && opts.focusField && dName !== undefined && dName !== null) {
+    requestAnimationFrame(() => dName.focus());
+  }
+}
+
+function openCart()  {
+  cartDrawer.classList.add('o');
+  cartOverlay.classList.add('o');
+  document.body.style.overflow = 'hidden';
+  setCheckoutStep('review');
+}
 function closeCart() { cartDrawer.classList.remove('o'); cartOverlay.classList.remove('o'); document.body.style.overflow = ''; }
 
 document.getElementById('cartBtn').addEventListener('click', openCart);
@@ -160,22 +217,20 @@ cartOverlay.addEventListener('click', closeCart);
 function renderCart() {
   const keys    = Object.keys(cart);
   const badge   = document.getElementById('cartBadge');
-  const itemsEl = document.getElementById('cartItems');
-  const emptyEl = document.getElementById('cartEmpty');
-  const footEl  = document.getElementById('cartFoot');
-  const totalEl = document.getElementById('cartTotal');
 
   const totalQty = keys.reduce((s, k) => s + cart[k].qty, 0);
   badge.textContent = totalQty;
   badge.classList.toggle('has', totalQty > 0);
   saveCart();
 
-  while (itemsEl.firstChild) itemsEl.firstChild.remove();
+  while (cartItemsEl.firstChild) cartItemsEl.firstChild.remove();
 
   if (!keys.length) {
-    itemsEl.appendChild(emptyEl);
-    footEl.classList.add('is-hidden');
-    totalEl.textContent = '\u20b90';
+    cartItemsEl.appendChild(cartEmptyEl);
+    cartFootEl.classList.add('is-hidden');
+    cartTotalEl.textContent = '\u20b90';
+    cartTotalDeliveryEl.textContent = '\u20b90';
+    setCheckoutStep('review');
     return;
   }
 
@@ -233,13 +288,15 @@ function renderCart() {
     row.appendChild(info);
     row.appendChild(ctrl);
     row.appendChild(priceEl);
-    itemsEl.appendChild(row);
+    cartItemsEl.appendChild(row);
   });
 
-  totalEl.textContent = '\u20b9' + total;
-  footEl.classList.remove('is-hidden');
+  cartTotalEl.textContent = '\u20b9' + total;
+  cartTotalDeliveryEl.textContent = '\u20b9' + total;
+  cartFootEl.classList.remove('is-hidden');
+  setCheckoutStep(checkoutStep);
 
-  itemsEl.querySelectorAll('.qty-btn').forEach(btn => {
+  cartItemsEl.querySelectorAll('.qty-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const k = btn.dataset.key;
       if (!cart[k]) return;
@@ -255,6 +312,23 @@ function renderCart() {
 
   updateOrderBtnState();
 }
+
+btnToDelivery.addEventListener('click', () => {
+  if (!Object.keys(cart).length) return;
+  setCheckoutStep('delivery', { focusField: true });
+});
+
+btnBackToCart.addEventListener('click', () => {
+  setCheckoutStep('review');
+});
+
+stepReview.addEventListener('click', () => {
+  setCheckoutStep('review');
+});
+
+stepDelivery.addEventListener('click', () => {
+  setCheckoutStep('delivery', { focusField: true, warnWhenEmpty: true });
+});
 
 /* Add to cart – reads product name, price, unit from the card DOM. */
 document.querySelectorAll('.btn-add').forEach(btn => {
@@ -550,7 +624,19 @@ document.getElementById('btnWaOrder').addEventListener('click', () => {
    form endpoint. Enquiries are handed off to WhatsApp using the same pattern as
    the order flow. Any migration off this handoff requires a MINOR constitution
    amendment + CSP allow-list update + declared anti-spam mechanism. */
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+function isPlausibleEmail(email) {
+  const s = String(email || '').trim();
+  const at = s.indexOf('@');
+  if (at <= 0 || at !== s.lastIndexOf('@')) return false;
+  const local = s.slice(0, at);
+  const domain = s.slice(at + 1);
+  if (!local || !domain) return false;
+  if (domain.startsWith('.') || domain.endsWith('.')) return false;
+  const dot = domain.lastIndexOf('.');
+  if (dot <= 0 || dot >= domain.length - 2) return false;
+  if (/\s/.test(s)) return false;
+  return true;
+}
 document.getElementById('cf').addEventListener('submit', function (e) {
   e.preventDefault();
 
@@ -577,7 +663,7 @@ document.getElementById('cf').addEventListener('submit', function (e) {
   if (!msg) return showErr('Please write a message.');
 
   // Basic email shape (client-side only)
-  if (!EMAIL_RE.test(em)) {
+  if (!isPlausibleEmail(em)) {
     return showErr('That email does not look right — please double-check.');
   }
 
@@ -608,16 +694,25 @@ document.getElementById('cf').addEventListener('submit', function (e) {
   setBtnIcon(btn, 'fa-solid fa-spinner fa-spin');
   btn.append(' Opening WhatsApp\u2026');
 
-  const win = window.open(
-    `https://wa.me/${WHATSAPP_NUMBER}?text=${encoded}`,
-    '_blank', 'noopener,noreferrer'
-  );
+  const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encoded}`;
+  let pageBackgrounded = false;
+  const onVisibility = () => {
+    if (document.visibilityState === 'hidden') pageBackgrounded = true;
+  };
+  document.addEventListener('visibilitychange', onVisibility, { passive: true });
+
+  // Some browsers (notably Safari with security flags) may return null even when
+  // the new tab opens successfully, so do not use handle truthiness as the only signal.
+  const win = window.open(waUrl, '_blank', 'noopener,noreferrer');
 
   setTimeout(() => {
+    document.removeEventListener('visibilitychange', onVisibility);
+
     btn.disabled = false;
     setBtnIcon(btn, 'fa-brands fa-whatsapp');
     btn.append(' Send via WhatsApp');
-    if (win) {
+    const opened = Boolean(win) || pageBackgrounded;
+    if (opened) {
       this.reset();
       okEl.style.display = 'block';
       setTimeout(() => { okEl.style.display = 'none'; }, 6000);
