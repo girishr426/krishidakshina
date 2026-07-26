@@ -922,16 +922,21 @@ footer { background:var(--dark); color:rgba(255,255,255,.55); }
     flex:1 1 auto;
     min-height:0;
     max-height:none;
-    overflow-y:auto;
+    overflow:hidden;
+    grid-template-rows:auto minmax(0,1fr);
   }
 
   .cart-drawer.delivery-step .checkout-steps {
-    position:sticky;
-    top:0;
-    z-index:2;
     background:var(--white);
     padding-bottom:.4rem;
     margin-bottom:.35rem;
+  }
+
+  .cart-drawer.delivery-step #cartDeliveryPanel {
+    min-height:0;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    padding-bottom:calc(.35rem + env(safe-area-inset-bottom));
   }
 
   .deliv-fields {
