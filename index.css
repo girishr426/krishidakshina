@@ -175,6 +175,17 @@ h1.hero-h1 .hl {
   -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
 }
 .hero-sub { font-size:1.08rem; color:rgba(255,255,255,.72); line-height:1.72; margin-bottom:2rem; animation:fdU .7s .2s ease both; }
+.hero-contact-link {
+  color:var(--white);
+  text-decoration:underline;
+  text-underline-offset:2px;
+  text-decoration-thickness:2px;
+  font-weight:700;
+}
+.hero-contact-link:hover,
+.hero-contact-link:focus-visible {
+  color:#c7ffd8;
+}
 .hero-btns { display:flex; gap:.9rem; flex-wrap:wrap; justify-content:center; margin-bottom:2.5rem; animation:fdU .7s .3s ease both; }
 .hero-btns .btn { padding:.9rem 1.85rem; font-size:1rem; }
 
@@ -189,7 +200,8 @@ h1.hero-h1 .hl {
   border:1px solid rgba(255,255,255,.18); border-radius:var(--r-xl); padding:1.8rem;
 }
 .hc-main { background:var(--white); border-radius:var(--r-lg); overflow:hidden; box-shadow:var(--sh-lg); margin-bottom:.9rem; }
-.hc-img  { height:230px; background:linear-gradient(135deg,#e8f5e9,#a5d6a7); display:flex; align-items:center; justify-content:center; font-size:5.5rem; }
+.hc-img  { height:230px; background:linear-gradient(135deg,#e8f5e9,#a5d6a7); display:flex; align-items:center; justify-content:center; font-size:5.5rem; overflow:hidden; }
+.hc-img img { width:100%; height:100%; object-fit:cover; display:block; }
 .hc-body { padding:1.1rem 1.3rem; }
 .hc-cat  { display:inline-block; background:#e8f5e9; color:var(--green-dark); font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; padding:.22rem .55rem; border-radius:4px; margin-bottom:.4rem; }
 .hc-name { font-weight:700; color:var(--dark); margin-bottom:.2rem; }
@@ -279,7 +291,7 @@ h1.hero-h1 .hl {
   font-size:3rem; overflow:hidden;
   transition:transform var(--ease);
 }
-.pimg img { width:100%; height:100%; object-fit:cover; display:block; }
+.pimg img { width:100%; height:100%; object-fit:contain; display:block; }
 
 /* Pastel per-card backgrounds (unchanged) */
 .pcard:nth-child(1)  .pimg { background:linear-gradient(135deg,#fff0f0,#ffdada); }
@@ -353,7 +365,9 @@ h1.hero-h1 .hl {
   border-radius:var(--r-xl); height:470px;
   background:linear-gradient(145deg,#e8f5e9,#81c784,#4caf50);
   display:flex; align-items:center; justify-content:center; font-size:8rem;
+  overflow:hidden; position:relative;
 }
+.about-img img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; border-radius:var(--r-xl); }
 .afc {
   position:absolute; background:var(--white); border-radius:var(--r-md);
   padding:1rem 1.35rem; box-shadow:var(--sh-lg);
