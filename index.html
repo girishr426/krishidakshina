@@ -107,18 +107,6 @@
           Wholesome Harvests,<br>
           <span class="hl">Full of Goodness,<br>Straight from the Farm</span>
         </h1>
-                <p class="hero-sub">
-          SSHHH!!! Your Health, Your Secret.
-          We're quietly growing, one harvest at a time.
-          Join us early and discover freshness before everyone else.
-        </p>
-        <p class="hero-sub">
-          From sun-kissed produce to pantry staples — KrishiDakshina delivers
-          farm-fresh quality to your kitchen.
-
-          Your Trusted Partner for Harvest Produce.
-          <a href="#contact" class="hero-contact-link">Contact Us</a>.
-        </p>
         <p class="hero-sub hero-sub--export">
           <i class="fa-solid fa-earth-asia" aria-hidden="true"></i>
           <span><strong>Export of farm products</strong> &mdash; bulk &amp; international enquiries welcome.</span>
@@ -132,6 +120,18 @@
             <i class="fa-solid fa-earth-asia" aria-hidden="true"></i> Export Enquiry
           </a>
         </div>
+        <p class="hero-sub">
+          SSHHH!!! Your Health, Your Secret.
+          We're quietly growing, one harvest at a time.
+          Join us early and discover freshness before everyone else.
+        </p>
+        <p class="hero-sub">
+          From sun-kissed produce to pantry staples — KrishiDakshina delivers
+          farm-fresh quality to your kitchen.
+
+          Your Trusted Partner for Harvest Produce.
+          <a href="#contact" class="hero-contact-link">Contact Us</a>.
+        </p>
         <div class="hero-stats">
           <div><div class="stat-n">10+</div><div class="stat-l">Products</div></div>
           <div><div class="stat-n">1K+</div><div class="stat-l">Customers</div></div>
@@ -149,7 +149,6 @@
             <div class="hc-body">
               <span class="hc-cat">🌿 Nature's Intelligence</span>
               <div class="hc-name">Harvest Nutri Sachet</div>
-              <div class="hc-price">₹299</div>
             </div>
           </div>
           <div class="hc-foot">
@@ -258,215 +257,119 @@
     ║     (handled by a delegated listener in index.js – no inline JS) ║
     ║                                                                  ║
     ║  5. EXAMPLE FILE NAMES ALREADY WIRED UP                         ║
-    ║     product_images/P1.svg           → Card 1                     ║
-    ║     product_images/P2.svg           → Card 2                     ║
-    ║     product_images/P3.svg           → Card 3                     ║
-    ║     product_images/P4.svg           → Card 4                     ║
-    ║     product_images/P5.svg           → Card 5                     ║
-    ║     product_images/P6.svg           → Card 6                     ║
-    ║     product_images/P7.svg           → Card 7                     ║
-    ║     product_images/P8.svg           → Card 8                     ║
-    ║     product_images/P9.svg           → Card 9                     ║
-    ║     product_images/P10.jpg          → Card 10                    ║
-    ║     product_images/P11.svg          → Card 11                    ║
-    ║     product_images/P12.svg          → Card 12                    ║
+    ║     product_images/P1.jpg           → Card 1 (Groundnut Oil)     ║
+    ║     product_images/P2.jpg           → Card 2 (Coconut Oil)       ║
+    ║     product_images/P3.jpg           → Card 3 (Honey)             ║
+    ║     product_images/P4.jpg           → Card 4 (Finger Millet)     ║
+    ║     product_images/P5.jpg           → Card 5 (Harvest Nutri)     ║
+    ║     product_images/P6.jpg           → Card 6 (Jaggery Powder)    ║
     ║                                                                  ║
+    ║  MULTIPLE IMAGES PER PRODUCT                                     ║
+    ║  ───────────────────────────                                     ║
+    ║  Set `data-extra-images="N"` on a <article class="pcard"> to     ║
+    ║  advertise N extra product photos. The zoom dialog will then     ║
+    ║  fetch product_images/P{n}_1.jpg, P{n}_2.jpg … P{n}_N.jpg        ║
+    ║  alongside the main P{n}.jpg. Cards without the attribute (or    ║
+    ║  with the value "0") stay single-image and the gallery UI hides. ║
     ╚══════════════════════════════════════════════════════════════════╝
     -->
     <div class="prod-grid">
 
-      <!-- ── Card 1 ── src="product_images/P1.svg" | 600×600 px JPG/PNG, max 200 KB -->
-      <article class="pcard fi">
+      <!-- ── Card 1 ── src="product_images/P1.jpg" | Cold-Pressed Groundnut Oil -->
+      <article class="pcard fi" data-extra-images="1">
+        <span class="pbadge org">Cold-Pressed</span>
         <div class="pimg">
-          <img src="product_images/P1.svg" alt="Tomatoes" data-fallback="🍅">
+          <img src="product_images/P1.jpg" alt="Cold-Pressed Groundnut Oil" data-fallback="🥜">
         </div>
         <div class="pbody">
-          <span class="pcat">Vegetables</span>
-          <h3 class="pname">Tomatoes</h3>
-          <p class="pdesc">Vine-ripened, sun-kissed tomatoes from certified farms. Sweet, juicy, and packed with flavour.</p>
+          <span class="pcat">Oils</span>
+          <h3 class="pname">Cold-Pressed Groundnut Oil</h3>
+          <p class="pdesc">Traditional wood-pressed groundnut oil, extracted at low temperatures to retain natural aroma and nutrients. No refining, no chemicals — just pure, honest oil.</p>
           <div class="pfoot">
-            <div class="pprice">₹89 <small>/ kg</small></div>
+            <div class="pprice">₹280 <small>/ litre</small></div>
             <button class="btn-add" aria-label="Add to cart"><i class="fa-solid fa-plus"></i></button>
           </div>
         </div>
       </article>
 
-      <!-- ── Card 2 ── src="product_images/P2.svg" | 600×600 px JPG/PNG, max 200 KB -->
+      <!-- ── Card 2 ── src="product_images/P2.jpg" | Cold-Pressed Coconut Oil -->
       <article class="pcard fi">
-        <span class="pbadge hot">Fresh Pick</span>
+        <span class="pbadge org">Cold-Pressed</span>
         <div class="pimg">
-          <img src="product_images/P2.svg" alt="Farm Fresh Eggs" data-fallback="🥚">
+          <img src="product_images/P2.jpg" alt="Cold-Pressed Coconut Oil" data-fallback="🥥">
         </div>
         <div class="pbody">
-          <span class="pcat">Dairy &amp; Eggs</span>
-          <h3 class="pname">Farm Fresh Eggs</h3>
-          <p class="pdesc">Free-range, cage-free eggs from happy hens. Rich golden yolks and firm whites every time.</p>
+          <span class="pcat">Oils</span>
+          <h3 class="pname">Cold-Pressed Coconut Oil</h3>
+          <p class="pdesc">Traditional wood-pressed coconut oil from sun-dried coastal Karnataka copra. Unrefined and unbleached — retains its natural aroma, sweetness, and every drop of goodness.</p>
           <div class="pfoot">
-            <div class="pprice">₹129 <small>/ dozen</small></div>
+            <div class="pprice">₹320 <small>/ litre</small></div>
             <button class="btn-add" aria-label="Add to cart"><i class="fa-solid fa-plus"></i></button>
           </div>
         </div>
       </article>
 
-      <!-- ── Card 3 ── src="product_images/P3.svg" | 600×600 px JPG/PNG, max 200 KB -->
+      <!-- ── Card 3 ── src="product_images/P3.jpg" | Honey -->
       <article class="pcard fi">
+        <span class="pbadge org">Raw &amp; Unfiltered</span>
         <div class="pimg">
-          <img src="product_images/P3.svg" alt="Baby Spinach" data-fallback="🥬">
+          <img src="product_images/P3.jpg" alt="Honey" data-fallback="🍯">
         </div>
         <div class="pbody">
-          <span class="pcat">Leafy Greens</span>
-          <h3 class="pname">Baby Spinach</h3>
-          <p class="pdesc">Tender baby spinach, harvested at peak nutrition. Perfect for salads, smoothies &amp; sautés.</p>
+          <span class="pcat">Naturals</span>
+          <h3 class="pname">Honey</h3>
+          <p class="pdesc">Natural honey harvested from bees raised on our own farm. Unheated, unfiltered, and free of additives — pure golden goodness straight from the hive.</p>
           <div class="pfoot">
-            <div class="pprice">₹55 <small>/ 250 g</small></div>
+            <div class="pprice">₹350 <small>/ 500 g</small></div>
             <button class="btn-add" aria-label="Add to cart"><i class="fa-solid fa-plus"></i></button>
           </div>
         </div>
       </article>
 
-      <!-- ── Card 4 ── src="product_images/P4.svg" | 600×600 px JPG/PNG, max 200 KB -->
+      <!-- ── Card 4 ── src="product_images/P4.jpg" | Finger Millet -->
       <article class="pcard fi">
         <div class="pimg">
-          <img src="product_images/P4.svg" alt="Multigrain Bread" data-fallback="🍞">
-        </div>
-        <div class="pbody">
-          <span class="pcat">Bakery</span>
-          <h3 class="pname">Multigrain Bread</h3>
-          <p class="pdesc">Stone-baked multigrain loaf loaded with seeds and ancient grains. No preservatives, no shortcuts.</p>
-          <div class="pfoot">
-            <div class="pprice">₹75 <small>/ loaf</small></div>
-            <button class="btn-add" aria-label="Add to cart"><i class="fa-solid fa-plus"></i></button>
-          </div>
-        </div>
-      </article>
-
-      <!-- ── Card 5 ── src="product_images/P5.svg" | 600×600 px JPG/PNG, max 200 KB -->
-      <article class="pcard fi">
-        <span class="pbadge sea">Seasonal</span>
-        <div class="pimg">
-          <img src="product_images/P5.svg" alt="Alphonso Mangoes" data-fallback="🥭">
-        </div>
-        <div class="pbody">
-          <span class="pcat">Fruits</span>
-          <h3 class="pname">Alphonso Mangoes</h3>
-          <p class="pdesc">The king of mangoes, sourced directly from Ratnagiri. Fibre-free, ultra-sweet, and supremely aromatic.</p>
-          <div class="pfoot">
-            <div class="pprice">₹249 <small>/ kg</small></div>
-            <button class="btn-add" aria-label="Add to cart"><i class="fa-solid fa-plus"></i></button>
-          </div>
-        </div>
-      </article>
-
-      <!-- ── Card 6 ── src="product_images/P6.svg" | 600×600 px JPG/PNG, max 200 KB -->
-      <article class="pcard fi">
-        <div class="pimg">
-          <img src="product_images/P6.svg" alt="Full Cream A2 Milk" data-fallback="🥛">
-        </div>
-        <div class="pbody">
-          <span class="pcat">Dairy</span>
-          <h3 class="pname">Full Cream A2 Milk</h3>
-          <p class="pdesc">Fresh A2 cow milk from grass-fed desi cows. Rich in natural fats and nutrients, delivered daily.</p>
-          <div class="pfoot">
-            <div class="pprice">₹65 <small>/ litre</small></div>
-            <button class="btn-add" aria-label="Add to cart"><i class="fa-solid fa-plus"></i></button>
-          </div>
-        </div>
-      </article>
-
-      <!-- ── Card 7 ── src="product_images/P7.svg" | 600×600 px JPG/PNG, max 200 KB -->
-      <article class="pcard fi">
-        <div class="pimg">
-          <img src="product_images/P7.svg" alt="Carrots" data-fallback="🥕">
-        </div>
-        <div class="pbody">
-          <span class="pcat">Vegetables</span>
-          <h3 class="pname">Carrots</h3>
-          <p class="pdesc">Crunchy, naturally sweet carrots grown without pesticides. Great for juicing, cooking, or snacking.</p>
-          <div class="pfoot">
-            <div class="pprice">₹45 <small>/ kg</small></div>
-            <button class="btn-add" aria-label="Add to cart"><i class="fa-solid fa-plus"></i></button>
-          </div>
-        </div>
-      </article>
-
-      <!-- ── Card 8 ── src="product_images/P8.svg" | 600×600 px JPG/PNG, max 200 KB -->
-      <article class="pcard fi">
-        <span class="pbadge hot">Fresh Pick</span>
-        <div class="pimg">
-          <img src="product_images/P8.svg" alt="Greek Yogurt" data-fallback="🫩">
-        </div>
-        <div class="pbody">
-          <span class="pcat">Dairy</span>
-          <h3 class="pname">Greek Yogurt</h3>
-          <p class="pdesc">Thick, creamy probiotic-rich Greek yogurt. No artificial flavours — just pure cultured goodness.</p>
-          <div class="pfoot">
-            <div class="pprice">₹95 <small>/ 250 g</small></div>
-            <button class="btn-add" aria-label="Add to cart"><i class="fa-solid fa-plus"></i></button>
-          </div>
-        </div>
-      </article>
-
-      <!-- ── Card 9 ── src="product_images/P9.svg" | 600×600 px JPG/PNG, max 200 KB -->
-      <article class="pcard fi">
-        <div class="pimg">
-          <img src="product_images/P9.svg" alt="Brown Basmati Rice" data-fallback="🌾">
+          <img src="product_images/P4.jpg" alt="Finger Millet" data-fallback="🌾">
         </div>
         <div class="pbody">
           <span class="pcat">Grains</span>
-          <h3 class="pname">Brown Basmati Rice</h3>
-          <p class="pdesc">Whole-grain basmati with the bran intact. Nutty flavour, lower GI, and high in dietary fibre.</p>
+          <h3 class="pname">Finger Millet</h3>
+          <p class="pdesc">Whole finger millet (ragi) sun-dried and stone-cleaned from Karnataka farms. Naturally rich in calcium and iron — perfect for ragi mudde, dosa, porridge, and rotis.</p>
           <div class="pfoot">
-            <div class="pprice">₹120 <small>/ kg</small></div>
+            <div class="pprice">₹90 <small>/ kg</small></div>
             <button class="btn-add" aria-label="Add to cart"><i class="fa-solid fa-plus"></i></button>
           </div>
         </div>
       </article>
 
-      <!-- ── Card 10 ── src="product_images/P10.jpg" | 600×600 px JPG/PNG, max 200 KB -->
-      <article class="pcard fi">
-        <span class="pbadge sea">Seasonal</span>
-        <div class="pimg">
-          <img src="product_images/P10.jpg" alt="Ripe Avocados" data-fallback="🥑">
-        </div>
-        <div class="pbody">
-          <span class="pcat">Fruits</span>
-          <h3 class="pname">Ripe Avocados</h3>
-          <p class="pdesc">Buttery, heart-healthy avocados sourced from hill farms. Ready to eat, rich in good fats.</p>
-          <div class="pfoot">
-            <div class="pprice">₹149 <small>/ piece</small></div>
-            <button class="btn-add" aria-label="Add to cart"><i class="fa-solid fa-plus"></i></button>
-          </div>
-        </div>
-      </article>
-
-      <!-- ── Card 11 ── src="product_images/P11.svg" | 600×600 px JPG/PNG, max 200 KB -->
-      <article class="pcard fi">
-        <div class="pimg">
-          <img src="product_images/P11.svg" alt="Mixed Nuts" data-fallback="🥜">
-        </div>
-        <div class="pbody">
-          <span class="pcat">Dry Fruits</span>
-          <h3 class="pname">Mixed Nuts &amp; Seeds</h3>
-          <p class="pdesc">Almonds, cashews, walnuts &amp; pumpkin seeds — roasted in small batches with zero oil or salt added.</p>
-          <div class="pfoot">
-            <div class="pprice">₹399 <small>/ 250 g</small></div>
-            <button class="btn-add" aria-label="Add to cart"><i class="fa-solid fa-plus"></i></button>
-          </div>
-        </div>
-      </article>
-
-      <!-- ── Card 12 ── src="product_images/P12.svg" | 600×600 px JPG/PNG, max 200 KB -->
+      <!-- ── Card 5 ── src="product_images/P5.jpg" | Harvest Nutri Sachet -->
       <article class="pcard fi">
         <span class="pbadge hot">Bestseller</span>
         <div class="pimg">
-          <img src="product_images/P12.svg" alt="Turmeric Powder" data-fallback="🟡">
+          <img src="product_images/P5.jpg" alt="Harvest Nutri Sachet" data-fallback="🥗">
         </div>
         <div class="pbody">
-          <span class="pcat">Spices</span>
-          <h3 class="pname">Pure Turmeric Powder</h3>
-          <p class="pdesc">High-curcumin turmeric stone-ground from heirloom varieties. Vibrant colour, strong aroma, zero fillers.</p>
+          <span class="pcat">Wellness</span>
+          <h3 class="pname">Harvest Nutri Sachet</h3>
+          <p class="pdesc">A daily nutrition sachet crafted from farm-sourced grains, seeds, and superfoods. Convenient single-serve packs — just mix, sip, and nourish.</p>
           <div class="pfoot">
-            <div class="pprice">₹75 <small>/ 100 g</small></div>
+            <div class="pprice">₹299 <small>/ box</small></div>
+            <button class="btn-add" aria-label="Add to cart"><i class="fa-solid fa-plus"></i></button>
+          </div>
+        </div>
+      </article>
+
+      <!-- ── Card 6 ── src="product_images/P6.jpg" | Natural Jaggery Powder -->
+      <article class="pcard fi">
+        <div class="pimg">
+          <img src="product_images/P6.jpg" alt="Natural Jaggery Powder" data-fallback="🟫">
+        </div>
+        <div class="pbody">
+          <span class="pcat">Sweeteners</span>
+          <h3 class="pname">Natural Jaggery Powder</h3>
+          <p class="pdesc">Chemical-free jaggery powder made from freshly pressed sugarcane. Rich in iron and minerals — a wholesome, healthier alternative to refined sugar.</p>
+          <div class="pfoot">
+            <div class="pprice">₹120 <small>/ 500 g</small></div>
             <button class="btn-add" aria-label="Add to cart"><i class="fa-solid fa-plus"></i></button>
           </div>
         </div>
@@ -1051,6 +954,48 @@
 <button id="top-btn" aria-label="Back to top">
   <i class="fa-solid fa-chevron-up"></i>
 </button>
+
+<!-- ══════════════════════════════════
+     PRODUCT IMAGE ZOOM DIALOG
+     Standard e-commerce lightbox: tap any product image → opens
+     fit-to-screen; tap the enlarged image once more → toggles 2×
+     zoom with pan; ESC / backdrop / ✕ button closes.
+     Populated at open-time from the clicked <img>'s src + alt so
+     one dialog serves every product card. Native <dialog> handles
+     focus trap, backdrop, and ESC for free.
+════════════════════════════════════ -->
+<dialog id="zoomDialog" class="zoom-dialog" aria-labelledby="zoomDialogTitle">
+  <button type="button" class="zoom-close" id="zoomClose" aria-label="Close image">
+    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+  </button>
+
+  <!-- Previous / next arrows appear only when the product has more than
+       one image (JS toggles .is-hidden on them). Kept outside the stage
+       so they float over any zoom state and don't affect scroll geometry. -->
+  <button type="button" class="zoom-nav zoom-prev is-hidden" id="zoomPrev" aria-label="Previous image">
+    <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+  </button>
+  <button type="button" class="zoom-nav zoom-next is-hidden" id="zoomNext" aria-label="Next image">
+    <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+  </button>
+
+  <!-- "2 / 4" pill, top-left corner. Hidden for single-image products. -->
+  <div class="zoom-counter is-hidden" id="zoomCounter" aria-live="polite"></div>
+
+  <div class="zoom-stage" id="zoomStage">
+    <img id="zoomImage" alt="" decoding="async">
+  </div>
+  <p id="zoomDialogTitle" class="zoom-caption" aria-live="polite"></p>
+
+  <!-- Thumbnail strip. JS populates one .zoom-thumb per gallery image.
+       Hidden entirely when the product has a single image. -->
+  <div class="zoom-thumbs is-hidden" id="zoomThumbs" role="tablist" aria-label="Product images"></div>
+
+  <p class="zoom-hint" aria-hidden="true">
+    <i class="fa-solid fa-magnifying-glass-plus"></i>
+    Tap image to zoom
+  </p>
+</dialog>
 
 <script src="index.js" defer></script>
 </body>
