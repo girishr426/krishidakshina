@@ -501,9 +501,9 @@ h1.hero-h1 .hl {
 }
 .pimg img { width:100%; height:100%; object-fit:cover; display:block; pointer-events:none; }
 
-/* Multi-image indicator — appears only when JS finds data-extra-images
-   > 0 on the parent .pcard. Reads its own text from the data-count attr
-   so no extra DOM node is needed. */
+/* Multi-image indicator — appears only when JS auto-detects one or more
+   extra images (P{n}_1.jpg, …) next to the main product photo. Reads its
+   own text from the data-count attr so no extra DOM node is needed. */
 .pimg[data-count]::after {
   content:"\1F4F7\FE0E  " attr(data-count); /* camera glyph, text-style */
   position:absolute;
@@ -873,19 +873,31 @@ footer { background:var(--dark); color:rgba(255,255,255,.55); }
 .cart-overlay {
   position:fixed; inset:0; background:rgba(0,0,0,.45);
   z-index:1100; opacity:0; pointer-events:none; transition:opacity var(--ease);
+  /* On iOS Safari the visual viewport can shift down inside the layout
+     viewport when the keyboard opens (visualViewport.offsetTop > 0). We
+     re-anchor to --vvo so the backdrop still covers the visible area
+     instead of leaving a strip of scrollable page peeking through at the
+     top. --vvh keeps the height matched to the visible viewport. */
+  top:var(--vvo, 0px);
+  height:var(--vvh, 100dvh);
 }
 .cart-overlay.o { opacity:1; pointer-events:all; }
 .cart-drawer {
-  position:fixed; top:0; right:0; bottom:auto; width:min(420px,100vw);
+  position:fixed; right:0; bottom:auto; width:min(420px,100vw);
   background:var(--white); z-index:1101; display:flex; flex-direction:column;
   transform:translateX(100%); transition:transform .32s cubic-bezier(.4,0,.2,1);
   box-shadow:-8px 0 32px rgba(0,0,0,.12);
   visibility:hidden;
   /* --vvh is set by JS from window.visualViewport.height when the on-screen
      keyboard opens; falls back to 100dvh (and 100vh for older engines).
-     bottom is intentionally 'auto' so the explicit height wins — with both
-     top and bottom set, position:fixed ignores the height property and the
-     drawer would extend under the on-screen keyboard. */
+     --vvo mirrors visualViewport.offsetTop so on iOS — where the engine can
+     shift the visual viewport down to expose a focused input — the drawer
+     top edge follows the visible area instead of ending up clipped ABOVE
+     it. Android Chrome and desktop keep --vvo at 0, so behaviour there is
+     unchanged. bottom is intentionally 'auto' so the explicit height wins —
+     with both top and bottom set, position:fixed ignores the height property
+     and the drawer would extend under the on-screen keyboard. */
+  top:var(--vvo, 0px);
   height:100vh;
   height:100dvh;
   height:var(--vvh, 100dvh);

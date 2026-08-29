@@ -266,17 +266,18 @@
     ║                                                                  ║
     ║  MULTIPLE IMAGES PER PRODUCT                                     ║
     ║  ───────────────────────────                                     ║
-    ║  Set `data-extra-images="N"` on a <article class="pcard"> to     ║
-    ║  advertise N extra product photos. The zoom dialog will then     ║
-    ║  fetch product_images/P{n}_1.jpg, P{n}_2.jpg … P{n}_N.jpg        ║
-    ║  alongside the main P{n}.jpg. Cards without the attribute (or    ║
-    ║  with the value "0") stay single-image and the gallery UI hides. ║
+    ║  Extras are auto-detected — no HTML attribute required. Drop a   ║
+    ║  file named P{n}_1.jpg, P{n}_2.jpg, … next to the main P{n}.jpg  ║
+    ║  and the zoom dialog will pick it up on the next reload. Probing ║
+    ║  starts at _1 and stops at the first missing file, so numbering  ║
+    ║  must be contiguous. Cards with no extras stay single-image and  ║
+    ║  the gallery UI (badge / arrows / thumbs) hides itself.          ║
     ╚══════════════════════════════════════════════════════════════════╝
     -->
     <div class="prod-grid">
 
       <!-- ── Card 1 ── src="product_images/P1.jpg" | Cold-Pressed Groundnut Oil -->
-      <article class="pcard fi" data-extra-images="1">
+      <article class="pcard fi">
         <span class="pbadge org">Cold-Pressed</span>
         <div class="pimg">
           <img src="product_images/P1.jpg" alt="Cold-Pressed Groundnut Oil" data-fallback="🥜">

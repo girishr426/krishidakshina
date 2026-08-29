@@ -202,17 +202,53 @@ function setCheckoutStep(step, opts = {}) {
   }
 }
 
+/* ── Body scroll lock ────────────────────────────────────────────────────────
+   Setting `document.body { overflow: hidden }` alone does NOT stop
+   touch-driven scrolling on iOS Safari — the page behind the cart drawer
+   still pans (especially while the on-screen keyboard is up). The reliable
+   cross-browser fix is the "position:fixed body" pattern: capture the
+   current scrollY, pin the body in place, and restore the scroll position
+   when the drawer closes. Works on iOS Safari, Android Chrome/Firefox, and
+   desktop browsers alike. ────────────────────────────────────────────────── */
+let lockedScrollY = 0;
+let bodyIsLocked  = false;
+function lockBodyScroll() {
+  if (bodyIsLocked) return;
+  lockedScrollY = window.scrollY || window.pageYOffset || 0;
+  const b = document.body;
+  b.style.position = 'fixed';
+  b.style.top      = (-lockedScrollY) + 'px';
+  b.style.left     = '0';
+  b.style.right    = '0';
+  b.style.width    = '100%';
+  b.style.overflow = 'hidden';
+  bodyIsLocked = true;
+}
+function unlockBodyScroll() {
+  if (!bodyIsLocked) return;
+  const b = document.body;
+  b.style.position = '';
+  b.style.top      = '';
+  b.style.left     = '';
+  b.style.right    = '';
+  b.style.width    = '';
+  b.style.overflow = '';
+  // Restore scroll without triggering smooth-scroll animations.
+  window.scrollTo(0, lockedScrollY);
+  bodyIsLocked = false;
+}
+
 function openCart()  {
   cartDrawer.classList.add('o');
   cartOverlay.classList.add('o');
-  document.body.style.overflow = 'hidden';
+  lockBodyScroll();
   setCheckoutStep('review');
   startViewportTracking();
 }
 function closeCart() {
   cartDrawer.classList.remove('o');
   cartOverlay.classList.remove('o');
-  document.body.style.overflow = '';
+  unlockBodyScroll();
   stopViewportTracking();
 }
 
@@ -224,32 +260,83 @@ function closeCart() {
    the "Place Order" button — is hidden underneath the keyboard and cannot be
    reached by scrolling.
 
+   iOS Safari adds a second wrinkle: to keep a focused input visible it can
+   *shift* the visual viewport DOWN inside the layout viewport (i.e. give
+   visualViewport.offsetTop a non-zero value). A position:fixed drawer pinned
+   to top:0 then sits ABOVE the visible visual viewport — its top edge is
+   clipped and the form becomes unscrollable. Android Chrome and desktop
+   browsers keep offsetTop at 0 so they are unaffected.
+
    We fix this by:
      1. Reading window.visualViewport.height and pinning the drawer to it via
         the --vvh CSS variable (so the drawer physically shrinks with the kb).
-     2. Publishing the keyboard's overlap height via --kb-h so the delivery
+     2. Reading window.visualViewport.offsetTop into --vvo so the drawer/
+        overlay can re-anchor to the visible viewport on iOS.
+     3. Publishing the keyboard's overlap height via --kb-h so the delivery
         panel's scroll container reserves matching bottom padding.
-     3. Scrolling the currently-focused field into view (centred) after the
+     4. Scrolling the currently-focused field into view (centred) after the
         keyboard finishes animating in.
    ─────────────────────────────────────────────────────────────────────────── */
 const vv = window.visualViewport || null;
 let viewportRafPending = false;
+
+/* Return the delivery-form field that currently has focus, or null. Used to
+   keep the caret-bearing element visible above the on-screen keyboard as the
+   visual viewport changes. We read document.activeElement (not a cached
+   reference) so tabbing between fields is picked up automatically. */
+function getFocusedDeliveryField() {
+  if (!cartDeliveryPanel) return null;
+  const el = document.activeElement;
+  if (!el || el === document.body) return null;
+  if (!cartDeliveryPanel.contains(el)) return null;
+  if (!el.matches('input, textarea, select')) return null;
+  return el;
+}
+
+/* Scroll the focused delivery field into the visible portion of the delivery
+   panel. Uses block:'center' so the field sits comfortably above the keyboard
+   (not flush against the fold where the caret would be clipped). Falls back
+   to the legacy signature on very old engines. */
+function scrollFocusedFieldIntoView(behavior) {
+  const el = getFocusedDeliveryField();
+  if (!el) return;
+  try {
+    el.scrollIntoView({
+      block:    'center',
+      inline:   'nearest',
+      behavior: behavior || 'smooth'
+    });
+  } catch {
+    el.scrollIntoView(false);
+  }
+}
 
 function updateViewportMetrics() {
   viewportRafPending = false;
   const rootStyle = document.documentElement.style;
   if (vv) {
     const vh = vv.height;
+    const vo = vv.offsetTop || 0;
     rootStyle.setProperty('--vvh', vh + 'px');
-    // Overlap = layout viewport height − visual viewport height. Clamp to 0
-    // because on desktop / when the keyboard is closed the difference can be
-    // a tiny sub-pixel value or even slightly negative.
-    const overlap = Math.max(0, window.innerHeight - vh);
+    rootStyle.setProperty('--vvo', vo + 'px');
+    // Overlap = layout viewport height − (visual viewport height + its top
+    // offset). Subtracting the offset avoids double-counting on iOS when the
+    // engine has already shifted the viewport to expose the focused input.
+    // Clamp to 0 because on desktop / when the keyboard is closed the
+    // difference can be a tiny sub-pixel value or even slightly negative.
+    const overlap = Math.max(0, window.innerHeight - vh - vo);
     rootStyle.setProperty('--kb-h', overlap + 'px');
   } else {
     rootStyle.setProperty('--vvh', window.innerHeight + 'px');
+    rootStyle.setProperty('--vvo', '0px');
     rootStyle.setProperty('--kb-h', '0px');
   }
+  // Whenever the viewport changes (keyboard open/close, rotation, keyboard
+  // suggestion strip appearing) re-centre the focused delivery field. This is
+  // the reliable "keyboard finished animating" hook on iOS Safari — the
+  // eager focusin scroll below often runs BEFORE the keyboard is fully open,
+  // which is exactly the case where the field ends up hidden underneath it.
+  scrollFocusedFieldIntoView('smooth');
 }
 
 function scheduleViewportUpdate() {
@@ -277,28 +364,31 @@ function stopViewportTracking() {
   }
   const rootStyle = document.documentElement.style;
   rootStyle.removeProperty('--vvh');
+  rootStyle.removeProperty('--vvo');
   rootStyle.removeProperty('--kb-h');
 }
 
-/* When the user taps into a delivery field, wait for the keyboard to open
-   (visualViewport 'resize' fires ~200–350 ms later on iOS Safari) and then
-   scroll the focused control to the middle of the still-visible drawer area.
-   Delegated on cartDeliveryPanel so it survives future field additions. */
+/* When the user taps into a delivery field we schedule multiple scrolls:
+     1. An immediate rAF nudge — for desktop / Android where there is no
+        keyboard animation to wait for, and for iOS Chrome/Firefox which open
+        the keyboard almost instantly.
+     2. A short-delayed retry (~200 ms) that catches most Android soft
+        keyboards.
+     3. A late retry (~550 ms) for iOS Safari, whose keyboard animation can
+        stretch past 500 ms — without this the field ends up under the
+        keyboard because the earlier scrolls ran while the visual viewport
+        was still full-height.
+   Once the visualViewport 'resize' event fires (the reliable "keyboard is
+   fully open" signal), updateViewportMetrics re-centres the field again as
+   a safety net. Delegated on cartDeliveryPanel so future field additions are
+   picked up automatically. */
 if (cartDeliveryPanel) {
   cartDeliveryPanel.addEventListener('focusin', (ev) => {
     const target = ev.target;
-    if (!target?.matches?.('input, textarea, select, button')) return;
-    // Two-stage scroll: an immediate nudge for browsers that don't animate the
-    // keyboard, then a delayed one that lands after the keyboard settles.
-    const bring = () => {
-      try {
-        target.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'smooth' });
-      } catch {
-        target.scrollIntoView(false);
-      }
-    };
-    requestAnimationFrame(bring);
-    setTimeout(bring, 320);
+    if (!target?.matches?.('input, textarea, select')) return;
+    requestAnimationFrame(() => scrollFocusedFieldIntoView('smooth'));
+    setTimeout(() => scrollFocusedFieldIntoView('smooth'), 200);
+    setTimeout(() => scrollFocusedFieldIntoView('smooth'), 550);
   });
 }
 
@@ -557,20 +647,23 @@ initProductCards();
 
    MULTIPLE IMAGES PER PRODUCT
    ---------------------------
-   Set `data-extra-images="N"` on <article class="pcard"> to declare
-   N additional images. The gallery expects them next to the main
-   image with a `_1`, `_2`, … suffix, keeping the same extension:
+   Extras are auto-detected — no HTML attribute required. The code
+   probes for sibling files sharing the main image's base name with
+   `_1`, `_2`, … suffixes, keeping the same extension:
 
        main:   product_images/P1.jpg
        extras: product_images/P1_1.jpg
                product_images/P1_2.jpg
-               product_images/P1_3.jpg   (when data-extra-images="3")
+               product_images/P1_3.jpg   (etc.)
 
-   When N > 0 the dialog shows prev/next arrows, a "n / N+1" counter
-   and a thumbnail strip. Left/Right arrow keys, on-screen buttons,
-   thumbnail clicks and horizontal swipes all navigate. When N = 0
-   (or the attribute is missing) all gallery UI hides itself and the
-   dialog behaves exactly like the single-image lightbox.
+   Probing walks upward starting at `_1` and stops at the first
+   missing file (or the MAX_EXTRAS safety cap). To add a photo just
+   drop the next `_N` file into product_images/ and reload; to
+   remove one, delete the file. The "1 / N+1" badge, prev/next
+   arrows, counter and thumbnail strip appear only when extras are
+   found; otherwise the dialog behaves exactly like a single-image
+   lightbox. Left/Right arrow keys, on-screen buttons, thumbnail
+   clicks and horizontal swipes all navigate.
 
    Each .pimg is promoted to a role="button" tabindex="0" element so
    the zoom is reachable by keyboard (Enter / Space) and announces
@@ -592,8 +685,9 @@ function initProductZoom() {
   const thumbsEl  = document.getElementById('zoomThumbs');
   if (!dialog || !imgEl || !stage || !closeBt) return;
 
-  // Hard cap so a stray `data-extra-images="999"` in the HTML can't loop-DoS
-  // the browser building 999 <img> thumbnail nodes.
+  // Hard cap so probing can't loop-DoS the browser if some misconfiguration
+  // ever caused an infinite chain of successful responses (e.g. a catch-all
+  // rewrite that returns the same image for every URL).
   const MAX_EXTRAS = 12;
 
   // Gallery state — one dialog serves every product, so it's fine to keep
@@ -602,47 +696,67 @@ function initProductZoom() {
   let galleryIndex = 0;
   let swipeSuppressClick = false; // set true briefly after a real swipe
 
-  /* Derive the full image list for a product card. Convention:
-        main image is the current <img src> on .pimg;
-        extras derive from that path by inserting _1, _2, … before the ext.
-     If `data-extra-images` is missing / 0, gallery collapses to a single
-     entry and all gallery UI hides. */
-  function galleryForCard(card) {
-    const mainImg = card?.querySelector('.pimg img');
-    if (!mainImg) return [];
-    // Use the DOM property (fully-qualified URL) so <img> resolution stays
-    // consistent regardless of how the src was written in HTML.
-    const mainSrc = mainImg.currentSrc || mainImg.src;
-    const mainAlt = mainImg.alt || '';
-    const list = [{ src: mainSrc, alt: mainAlt }];
-
-    const raw = Number.parseInt(card.dataset.extraImages || '0', 10);
-    const extra = Number.isFinite(raw) ? Math.max(0, Math.min(MAX_EXTRAS, raw)) : 0;
-    if (extra === 0) return list;
-
-    // Split "…/P1.jpg" → base "…/P1", ext ".jpg" (last dot only, so files
-    // like "foo.bar.jpg" still map to "foo.bar_1.jpg"). Query strings or
-    // hashes are preserved by appending after the ext.
-    const url = mainSrc;
-    // Isolate any ?query#hash so we can put it back on the derived URLs.
-    // A regex finds the first '?' or '#' in one pass, avoiding two indexOf
-    // existence checks (also silences the "prefer includes()" lint rule).
+  /* Split "…/P1.jpg?v=1#x" into base "…/P1", ext ".jpg", tail "?v=1#x" so
+     derived URLs can insert "_N" between base and ext while preserving any
+     query string / hash. Returns null if the URL has no extension. */
+  function splitImageUrl(url) {
     const suffixMatch = /[?#]/.exec(url);
     const suffixStart = suffixMatch ? suffixMatch.index : url.length;
     const path = url.slice(0, suffixStart);
     const tail = url.slice(suffixStart); // '' | '?…' | '#…' | '?…#…'
-    const dot = path.lastIndexOf('.');
-    if (dot === -1) return list;
-    const base = path.slice(0, dot);
-    const ext  = path.slice(dot);
+    const dot  = path.lastIndexOf('.');
+    if (dot === -1) return null;
+    return { base: path.slice(0, dot), ext: path.slice(dot), tail };
+  }
 
-    for (let i = 1; i <= extra; i++) {
-      list.push({
-        src: `${base}_${i}${ext}${tail}`,
-        alt: `${mainAlt} \u2014 image ${i + 1}`
-      });
-    }
-    return list;
+  /* Best-effort HEAD probe using <img>. Resolves true when the browser
+     decodes it, false on any network / 404 / decode failure. Safe under
+     the site's CSP (img-src covers same-origin product_images/). */
+  function probeImage(src) {
+    return new Promise(resolve => {
+      const probe = new Image();
+      probe.onload  = () => resolve(true);
+      probe.onerror = () => resolve(false);
+      probe.src = src;
+    });
+  }
+
+  /* Discover extras for a card by walking _1, _2, … until a probe fails.
+     Cached on the card element as `card._extrasPromise` so repeated opens
+     — and the badge init in preparePimgs() — share one request chain. */
+  function discoverExtras(card) {
+    if (card._extrasPromise) return card._extrasPromise;
+    card._extrasPromise = (async () => {
+      const mainImg = card.querySelector('.pimg img');
+      if (!mainImg) return [];
+      const mainSrc = mainImg.currentSrc || mainImg.src;
+      const mainAlt = mainImg.alt || '';
+      const parts   = splitImageUrl(mainSrc);
+      if (!parts) return [];
+      const found = [];
+      for (let i = 1; i <= MAX_EXTRAS; i++) {
+        const src = `${parts.base}_${i}${parts.ext}${parts.tail}`;
+        // Sequential (not parallel) because as soon as one misses we stop —
+        // parallel probing would issue MAX_EXTRAS requests for every card
+        // on every load.
+        // eslint-disable-next-line no-await-in-loop
+        const ok = await probeImage(src);
+        if (!ok) break;
+        found.push({ src, alt: `${mainAlt} \u2014 image ${i + 1}` });
+      }
+      return found;
+    })();
+    return card._extrasPromise;
+  }
+
+  /* Build the full gallery list (main + discovered extras) for a card. */
+  async function galleryForCard(card) {
+    const mainImg = card?.querySelector('.pimg img');
+    if (!mainImg) return [];
+    const mainSrc = mainImg.currentSrc || mainImg.src;
+    const mainAlt = mainImg.alt || '';
+    const extras  = await discoverExtras(card);
+    return [{ src: mainSrc, alt: mainAlt }, ...extras];
   }
 
   function preparePimgs() {
@@ -654,21 +768,22 @@ function initProductZoom() {
       pimg.setAttribute('tabindex', '0');
       pimg.setAttribute('aria-label',
         `View larger image of ${inner.alt || 'product'}`);
+      pimg.dataset.zoomReady = '1';
 
       // Multi-image affordance ("1/N" pill). Applied via a data attribute
       // that .pimg[data-count]::after reads through CSS attr() — no extra
       // DOM node, and toggling the attribute cleanly removes the badge.
+      // Kick off probing asynchronously so the initial paint isn't blocked;
+      // the badge appears once discovery settles.
       const card = pimg.closest('.pcard');
-      const rawExtras = Number.parseInt(card?.dataset.extraImages || '0', 10);
-      const extras = Number.isFinite(rawExtras)
-        ? Math.max(0, Math.min(MAX_EXTRAS, rawExtras))
-        : 0;
-      if (extras > 0) {
-        pimg.dataset.count = `1 / ${extras + 1}`;
-      } else {
-        delete pimg.dataset.count;
-      }
-      pimg.dataset.zoomReady = '1';
+      if (!card) return;
+      discoverExtras(card).then(extras => {
+        if (extras.length > 0) {
+          pimg.dataset.count = `1 / ${extras.length + 1}`;
+        } else {
+          delete pimg.dataset.count;
+        }
+      });
     });
   }
   preparePimgs();
@@ -751,9 +866,9 @@ function initProductZoom() {
     updateThumbSelection();
   }
 
-  function openZoom(card) {
+  async function openZoom(card) {
     if (!card) return;
-    gallery = galleryForCard(card);
+    gallery = await galleryForCard(card);
     if (!gallery.length) return;
     buildThumbs();
     showGalleryImage(0);
