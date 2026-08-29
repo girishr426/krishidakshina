@@ -873,37 +873,26 @@ footer { background:var(--dark); color:rgba(255,255,255,.55); }
 .cart-overlay {
   position:fixed; inset:0; background:rgba(0,0,0,.45);
   z-index:1100; opacity:0; pointer-events:none; transition:opacity var(--ease);
-  /* On iOS Safari the visual viewport can shift down inside the layout
-     viewport when the keyboard opens (visualViewport.offsetTop > 0). We
-     re-anchor to --vvo so the backdrop still covers the visible area
-     instead of leaving a strip of scrollable page peeking through at the
-     top. --vvh keeps the height matched to the visible viewport. */
-  top:var(--vvo, 0px);
-  height:var(--vvh, 100dvh);
 }
 .cart-overlay.o { opacity:1; pointer-events:all; }
 .cart-drawer {
-  position:fixed; right:0; bottom:auto; width:min(420px,100vw);
+  position:fixed; top:0; right:0; bottom:0; width:min(420px,100vw);
   background:var(--white); z-index:1101; display:flex; flex-direction:column;
   transform:translateX(100%); transition:transform .32s cubic-bezier(.4,0,.2,1);
   box-shadow:-8px 0 32px rgba(0,0,0,.12);
   visibility:hidden;
-  /* --vvh is set by JS from window.visualViewport.height when the on-screen
-     keyboard opens; falls back to 100dvh (and 100vh for older engines).
-     --vvo mirrors visualViewport.offsetTop so on iOS — where the engine can
-     shift the visual viewport down to expose a focused input — the drawer
-     top edge follows the visible area instead of ending up clipped ABOVE
-     it. Android Chrome and desktop keep --vvo at 0, so behaviour there is
-     unchanged. bottom is intentionally 'auto' so the explicit height wins —
-     with both top and bottom set, position:fixed ignores the height property
-     and the drawer would extend under the on-screen keyboard. */
-  top:var(--vvo, 0px);
-  height:100vh;
-  height:100dvh;
-  height:var(--vvh, 100dvh);
-  max-height:100vh;
-  max-height:100dvh;
-  max-height:var(--vvh, 100dvh);
+  /* Cover the full layout viewport (top:0 → bottom:0) so the drawer's white
+     surface always meets the top of the on-screen keyboard with no strip of
+     the page peeking through. --kb-h (keyboard overlap in px) is reserved as
+     bottom padding so real content stays above the keyboard, and --vvo
+     mirrors visualViewport.offsetTop as top padding on iOS when Safari
+     shifts the visual viewport down to expose a focused input. Both fall
+     back to 0px so behaviour on Android and desktop is unchanged.
+     box-sizing:border-box makes the padding subtract from the drawer's
+     inner content height instead of adding to its outer size. */
+  box-sizing:border-box;
+  padding-top:var(--vvo, 0px);
+  padding-bottom:var(--kb-h, 0px);
   overflow:hidden;
 }
 .cart-drawer.o { transform:none; visibility:visible; }
@@ -1692,13 +1681,14 @@ footer { background:var(--dark); color:rgba(255,255,255,.55); }
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
-  /* --kb-h is populated by JS with the on-screen keyboard's overlap height
-     (window.innerHeight − visualViewport.height). Reserving that much extra
-     bottom padding lets the user scroll the focused field ABOVE the
-     keyboard instead of it being trapped underneath. Works on phones,
-     tablets, and detachable-keyboard 2-in-1s alike. */
-  padding-bottom:calc(.35rem + env(safe-area-inset-bottom) + var(--kb-h, 0px));
-  scroll-padding-bottom:calc(1rem + var(--kb-h, 0px));
+  /* The drawer itself already reserves the on-screen keyboard's height via
+     padding-bottom:var(--kb-h), so the delivery panel only needs the normal
+     safe-area inset here (avoids double-reserving the keyboard, which would
+     leave the last field further from the keyboard than necessary).
+     scroll-padding-bottom keeps a small gap when scrollIntoView aligns the
+     focused field near the bottom of the visible area. */
+  padding-bottom:calc(.35rem + env(safe-area-inset-bottom));
+  scroll-padding-bottom:1rem;
 }
 
 /* Mobile & tablet drawer ergonomics: full-width sheet, compact padding,
