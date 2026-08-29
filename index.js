@@ -1,5 +1,5 @@
 /* ---------------------------------------------------------------------------
-   Gut Point storefront – client-side script.
+   KrishiDakshina storefront – client-side script.
    Extracted from static/index.html so the page's Content-Security-Policy can
    drop 'unsafe-inline' from script-src (blocks injected inline scripts and
    inline event-handler attributes).
@@ -89,11 +89,13 @@ const io = new IntersectionObserver((entries) => {
 document.querySelectorAll('.fi').forEach(el => io.observe(el));
 
 /* ── CART SYSTEM + WHATSAPP ORDER ── */
-const WHATSAPP_NUMBER = '919876543210'; // <- replace with your WhatsApp business number
+const WHATSAPP_NUMBER = '918970059754'; // <- replace with your WhatsApp business number
 
 // Cart persists in localStorage so items survive page reloads / new tabs.
 // Storage is per-browser (each visitor has their own cart – multi-user safe).
-const CART_STORAGE_KEY = 'gutpoint.cart.v1';
+// NOTE: namespace 'krishidakshina.*' matches the site brand; the v1 suffix is
+// the schema version — any shape change bumps to .v2 with a migrate/reset path.
+const CART_STORAGE_KEY = 'krishidakshina.cart.v1';
 const MAX_QTY_PER_ITEM = 99;   // guard against tampered qty (abuse / giant WhatsApp text)
 const MAX_CART_ITEMS   = 50;   // guard against tampered storage adding hundreds of rows
 const MAX_NAME_LEN     = 200;
@@ -147,9 +149,248 @@ function saveCart() {
 
 const cartDrawer  = document.getElementById('cartDrawer');
 const cartOverlay = document.getElementById('cartOverlay');
+const cartItemsEl = document.getElementById('cartItems');
+const cartEmptyEl = document.getElementById('cartEmpty');
+const cartFootEl  = document.getElementById('cartFoot');
+const cartTotalEl = document.getElementById('cartTotal');
+const cartTotalDeliveryEl = document.getElementById('cartTotalDelivery');
+const cartReviewPanel = document.getElementById('cartReviewPanel');
+const cartDeliveryPanel = document.getElementById('cartDeliveryPanel');
+const stepReview = document.getElementById('stepReview');
+const stepDelivery = document.getElementById('stepDelivery');
+const btnToDelivery = document.getElementById('btnToDelivery');
+const btnBackToCart = document.getElementById('btnBackToCart');
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-function openCart()  { cartDrawer.classList.add('o'); cartOverlay.classList.add('o'); document.body.style.overflow = 'hidden'; }
-function closeCart() { cartDrawer.classList.remove('o'); cartOverlay.classList.remove('o'); document.body.style.overflow = ''; }
+let checkoutStep = 'review';
+
+function animatePanelIn(el) {
+  if (!el || prefersReducedMotion.matches) return;
+  el.classList.remove('panel-animate-in');
+  el.getBoundingClientRect();
+  el.classList.add('panel-animate-in');
+}
+
+function setCheckoutStep(step, opts = {}) {
+  const hasItems = Object.keys(cart).length > 0;
+  const nextStep = (step === 'delivery' && hasItems) ? 'delivery' : 'review';
+  if (step === 'delivery' && !hasItems && opts.warnWhenEmpty) {
+    setHint('Add at least one item in cart before entering delivery details.', 'err');
+  }
+  checkoutStep = nextStep;
+
+  const deliveryMode = checkoutStep === 'delivery';
+  cartDrawer.classList.toggle('delivery-step', deliveryMode);
+  cartItemsEl.classList.toggle('is-hidden', deliveryMode);
+  cartReviewPanel.classList.toggle('is-hidden', deliveryMode);
+  cartDeliveryPanel.classList.toggle('is-hidden', !deliveryMode);
+  stepReview.classList.toggle('is-active', !deliveryMode);
+  stepDelivery.classList.toggle('is-active', deliveryMode);
+  stepReview.setAttribute('aria-pressed', String(!deliveryMode));
+  stepDelivery.setAttribute('aria-pressed', String(deliveryMode));
+
+  if (deliveryMode) {
+    animatePanelIn(cartDeliveryPanel);
+    if (cartFootEl) cartFootEl.scrollTop = 0;
+  } else {
+    animatePanelIn(cartItemsEl);
+    animatePanelIn(cartReviewPanel);
+  }
+
+  if (deliveryMode && opts.focusField && dName !== undefined && dName !== null) {
+    requestAnimationFrame(() => dName.focus());
+  }
+}
+
+/* ── Body scroll lock ────────────────────────────────────────────────────────
+   Setting `document.body { overflow: hidden }` alone does NOT stop
+   touch-driven scrolling on iOS Safari — the page behind the cart drawer
+   still pans (especially while the on-screen keyboard is up). The reliable
+   cross-browser fix is the "position:fixed body" pattern: capture the
+   current scrollY, pin the body in place, and restore the scroll position
+   when the drawer closes. Works on iOS Safari, Android Chrome/Firefox, and
+   desktop browsers alike. ────────────────────────────────────────────────── */
+let lockedScrollY = 0;
+let bodyIsLocked  = false;
+function lockBodyScroll() {
+  if (bodyIsLocked) return;
+  lockedScrollY = window.scrollY || window.pageYOffset || 0;
+  const b = document.body;
+  b.style.position = 'fixed';
+  b.style.top      = (-lockedScrollY) + 'px';
+  b.style.left     = '0';
+  b.style.right    = '0';
+  b.style.width    = '100%';
+  b.style.overflow = 'hidden';
+  bodyIsLocked = true;
+}
+function unlockBodyScroll() {
+  if (!bodyIsLocked) return;
+  const b = document.body;
+  b.style.position = '';
+  b.style.top      = '';
+  b.style.left     = '';
+  b.style.right    = '';
+  b.style.width    = '';
+  b.style.overflow = '';
+  // Restore scroll without triggering smooth-scroll animations.
+  window.scrollTo(0, lockedScrollY);
+  bodyIsLocked = false;
+}
+
+function openCart()  {
+  cartDrawer.classList.add('o');
+  cartOverlay.classList.add('o');
+  lockBodyScroll();
+  setCheckoutStep('review');
+  startViewportTracking();
+}
+function closeCart() {
+  cartDrawer.classList.remove('o');
+  cartOverlay.classList.remove('o');
+  unlockBodyScroll();
+  stopViewportTracking();
+}
+
+/* ── Mobile keyboard handling for the delivery form ──────────────────────────
+   On mobile browsers the on-screen (virtual) keyboard shrinks the VISUAL
+   viewport but usually leaves the LAYOUT viewport (and therefore 100dvh)
+   unchanged. Without help, the cart drawer stays 100dvh tall, so its bottom
+   half — including the last address fields, "Use my current location", and
+   the "Place Order" button — is hidden underneath the keyboard and cannot be
+   reached by scrolling.
+
+   iOS Safari adds a second wrinkle: to keep a focused input visible it can
+   *shift* the visual viewport DOWN inside the layout viewport (i.e. give
+   visualViewport.offsetTop a non-zero value). A position:fixed drawer pinned
+   to top:0 then sits ABOVE the visible visual viewport — its top edge is
+   clipped and the form becomes unscrollable. Android Chrome and desktop
+   browsers keep offsetTop at 0 so they are unaffected.
+
+   We fix this by:
+     1. Reading window.visualViewport.height and pinning the drawer to it via
+        the --vvh CSS variable (so the drawer physically shrinks with the kb).
+     2. Reading window.visualViewport.offsetTop into --vvo so the drawer/
+        overlay can re-anchor to the visible viewport on iOS.
+     3. Publishing the keyboard's overlap height via --kb-h so the delivery
+        panel's scroll container reserves matching bottom padding.
+     4. Scrolling the currently-focused field into view (centred) after the
+        keyboard finishes animating in.
+   ─────────────────────────────────────────────────────────────────────────── */
+const vv = window.visualViewport || null;
+let viewportRafPending = false;
+
+/* Return the delivery-form field that currently has focus, or null. Used to
+   keep the caret-bearing element visible above the on-screen keyboard as the
+   visual viewport changes. We read document.activeElement (not a cached
+   reference) so tabbing between fields is picked up automatically. */
+function getFocusedDeliveryField() {
+  if (!cartDeliveryPanel) return null;
+  const el = document.activeElement;
+  if (!el || el === document.body) return null;
+  if (!cartDeliveryPanel.contains(el)) return null;
+  if (!el.matches('input, textarea, select')) return null;
+  return el;
+}
+
+/* Scroll the focused delivery field into the visible portion of the delivery
+   panel. Uses block:'center' so the field sits comfortably above the keyboard
+   (not flush against the fold where the caret would be clipped). Falls back
+   to the legacy signature on very old engines. */
+function scrollFocusedFieldIntoView(behavior) {
+  const el = getFocusedDeliveryField();
+  if (!el) return;
+  try {
+    el.scrollIntoView({
+      block:    'center',
+      inline:   'nearest',
+      behavior: behavior || 'smooth'
+    });
+  } catch {
+    el.scrollIntoView(false);
+  }
+}
+
+function updateViewportMetrics() {
+  viewportRafPending = false;
+  const rootStyle = document.documentElement.style;
+  if (vv) {
+    const vh = vv.height;
+    const vo = vv.offsetTop || 0;
+    rootStyle.setProperty('--vvh', vh + 'px');
+    rootStyle.setProperty('--vvo', vo + 'px');
+    // Overlap = layout viewport height − (visual viewport height + its top
+    // offset). Subtracting the offset avoids double-counting on iOS when the
+    // engine has already shifted the viewport to expose the focused input.
+    // Clamp to 0 because on desktop / when the keyboard is closed the
+    // difference can be a tiny sub-pixel value or even slightly negative.
+    const overlap = Math.max(0, window.innerHeight - vh - vo);
+    rootStyle.setProperty('--kb-h', overlap + 'px');
+  } else {
+    rootStyle.setProperty('--vvh', window.innerHeight + 'px');
+    rootStyle.setProperty('--vvo', '0px');
+    rootStyle.setProperty('--kb-h', '0px');
+  }
+  // Whenever the viewport changes (keyboard open/close, rotation, keyboard
+  // suggestion strip appearing) re-centre the focused delivery field. This is
+  // the reliable "keyboard finished animating" hook on iOS Safari — the
+  // eager focusin scroll below often runs BEFORE the keyboard is fully open,
+  // which is exactly the case where the field ends up hidden underneath it.
+  scrollFocusedFieldIntoView('smooth');
+}
+
+function scheduleViewportUpdate() {
+  if (viewportRafPending) return;
+  viewportRafPending = true;
+  requestAnimationFrame(updateViewportMetrics);
+}
+
+function startViewportTracking() {
+  updateViewportMetrics();
+  if (vv) {
+    vv.addEventListener('resize', scheduleViewportUpdate);
+    vv.addEventListener('scroll', scheduleViewportUpdate);
+  } else {
+    window.addEventListener('resize', scheduleViewportUpdate);
+  }
+}
+
+function stopViewportTracking() {
+  if (vv) {
+    vv.removeEventListener('resize', scheduleViewportUpdate);
+    vv.removeEventListener('scroll', scheduleViewportUpdate);
+  } else {
+    window.removeEventListener('resize', scheduleViewportUpdate);
+  }
+  const rootStyle = document.documentElement.style;
+  rootStyle.removeProperty('--vvh');
+  rootStyle.removeProperty('--vvo');
+  rootStyle.removeProperty('--kb-h');
+}
+
+/* When the user taps into a delivery field we schedule multiple scrolls:
+     1. An immediate rAF nudge — for desktop / Android where there is no
+        keyboard animation to wait for, and for iOS Chrome/Firefox which open
+        the keyboard almost instantly.
+     2. A short-delayed retry (~200 ms) that catches most Android soft
+        keyboards.
+     3. A late retry (~550 ms) for iOS Safari, whose keyboard animation can
+        stretch past 500 ms — without this the field ends up under the
+        keyboard because the earlier scrolls ran while the visual viewport
+        was still full-height.
+   Once the visualViewport 'resize' event fires (the reliable "keyboard is
+   fully open" signal), updateViewportMetrics re-centres the field again as
+   a safety net. Delegated on cartDeliveryPanel so future field additions are
+   picked up automatically. */
+if (cartDeliveryPanel) {
+  cartDeliveryPanel.addEventListener('focusin', (ev) => {
+    const target = ev.target;
+    if (!target?.matches?.('input, textarea, select')) return;
+    requestAnimationFrame(() => scrollFocusedFieldIntoView('smooth'));
+    setTimeout(() => scrollFocusedFieldIntoView('smooth'), 200);
+    setTimeout(() => scrollFocusedFieldIntoView('smooth'), 550);
+  });
+}
 
 document.getElementById('cartBtn').addEventListener('click', openCart);
 document.getElementById('cartClose').addEventListener('click', closeCart);
@@ -158,22 +399,21 @@ cartOverlay.addEventListener('click', closeCart);
 function renderCart() {
   const keys    = Object.keys(cart);
   const badge   = document.getElementById('cartBadge');
-  const itemsEl = document.getElementById('cartItems');
-  const emptyEl = document.getElementById('cartEmpty');
-  const footEl  = document.getElementById('cartFoot');
-  const totalEl = document.getElementById('cartTotal');
 
   const totalQty = keys.reduce((s, k) => s + cart[k].qty, 0);
   badge.textContent = totalQty;
   badge.classList.toggle('has', totalQty > 0);
   saveCart();
 
-  while (itemsEl.firstChild) itemsEl.firstChild.remove();
+  while (cartItemsEl.firstChild) cartItemsEl.firstChild.remove();
 
   if (!keys.length) {
-    itemsEl.appendChild(emptyEl);
-    footEl.classList.add('is-hidden');
-    totalEl.textContent = '\u20b90';
+    cartItemsEl.appendChild(cartEmptyEl);
+    cartFootEl.classList.add('is-hidden');
+    cartTotalEl.textContent = '\u20b90';
+    cartTotalDeliveryEl.textContent = '\u20b90';
+    setCheckoutStep('review');
+    if (typeof syncProductCards === 'function') syncProductCards();
     return;
   }
 
@@ -231,13 +471,15 @@ function renderCart() {
     row.appendChild(info);
     row.appendChild(ctrl);
     row.appendChild(priceEl);
-    itemsEl.appendChild(row);
+    cartItemsEl.appendChild(row);
   });
 
-  totalEl.textContent = '\u20b9' + total;
-  footEl.classList.remove('is-hidden');
+  cartTotalEl.textContent = '\u20b9' + total;
+  cartTotalDeliveryEl.textContent = '\u20b9' + total;
+  cartFootEl.classList.remove('is-hidden');
+  setCheckoutStep(checkoutStep);
 
-  itemsEl.querySelectorAll('.qty-btn').forEach(btn => {
+  cartItemsEl.querySelectorAll('.qty-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const k = btn.dataset.key;
       if (!cart[k]) return;
@@ -252,47 +494,531 @@ function renderCart() {
   });
 
   updateOrderBtnState();
+  if (typeof syncProductCards === 'function') syncProductCards();
 }
 
-/* Add to cart – reads product name, price, unit from the card DOM. */
-document.querySelectorAll('.btn-add').forEach(btn => {
-  btn.addEventListener('click', function () {
-    const card  = this.closest('.pcard');
-    const name  = card.querySelector('.pname').textContent.trim();
-    // Price node text looks like "₹55 / 250 g" – capture ONLY the first number
-    // (stripping all non-digits would concatenate "55" + "250" = 55250).
-    const priceEl = card.querySelector('.pprice');
-    const priceText = priceEl.textContent.trim();
-    const priceMatch = priceText.match(/\d[\d,]*/);
-    const price = priceMatch ? Number.parseInt(priceMatch[0].replaceAll(',', ''), 10) : 0;
-    // Unit is everything after the "/" (e.g. "kg", "250 g", "dozen")
-    const smallEl = priceEl.querySelector('small');
-    let unitRaw = '';
-    if (smallEl) {
-      unitRaw = smallEl.textContent;
-    } else {
-      const m = priceText.match(/\/\s*(.+)/);
-      unitRaw = m ? m[1] : '';
-    }
-    const unit = unitRaw.replace(/^\/\s*/, '').trim();
-    const key  = name.toLowerCase().replace(/\s+/g, '-');
+btnToDelivery.addEventListener('click', () => {
+  if (!Object.keys(cart).length) return;
+  setCheckoutStep('delivery', { focusField: true });
+});
 
-    // Cap qty per item and total distinct items to blunt storage-tampering abuse.
-    if (cart[key]) {
-      if (cart[key].qty < MAX_QTY_PER_ITEM) cart[key].qty++;
+btnBackToCart.addEventListener('click', () => {
+  setCheckoutStep('review');
+});
+
+stepReview.addEventListener('click', () => {
+  setCheckoutStep('review');
+});
+
+stepDelivery.addEventListener('click', () => {
+  setCheckoutStep('delivery', { focusField: true, warnWhenEmpty: true });
+});
+
+/* ── Product-card quantity selector ─────────────────────────────────────────
+   Each product card starts with a single <button class="btn-add"> "+" chip.
+   On the first click that chip morphs into a horizontal [− N +] counter
+   (.qty-inline) — subsequent clicks on the ± buttons update the count in
+   place. When the count drops back to zero the counter is hidden and the
+   Add button reappears. The cart drawer's own ± controls also feed through
+   syncProductCards(), so removing an item from the drawer reverts the card
+   to the Add state automatically.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+// Derive the same stable key that the cart uses, and pull price / unit from
+// the card DOM. Kept in one helper so the Add button and the ± buttons agree
+// on identity even if the markup evolves.
+function readCardProduct(card) {
+  const name = card.querySelector('.pname').textContent.trim();
+  const priceEl = card.querySelector('.pprice');
+  const priceText = priceEl.textContent.trim();
+  // Price node text looks like "₹55 / 250 g" — capture ONLY the first number
+  // (stripping all non-digits would concatenate "55" + "250" = 55250).
+  const priceMatch = priceText.match(/\d[\d,]*/);
+  const price = priceMatch ? Number.parseInt(priceMatch[0].replaceAll(',', ''), 10) : 0;
+  const smallEl = priceEl.querySelector('small');
+  let unitRaw = '';
+  if (smallEl) {
+    unitRaw = smallEl.textContent;
+  } else {
+    const m = priceText.match(/\/\s*(.+)/);
+    unitRaw = m ? m[1] : '';
+  }
+  const unit = unitRaw.replace(/^\/\s*/, '').trim();
+  const key  = name.toLowerCase().replace(/\s+/g, '-');
+  return { key, name, price, unit };
+}
+
+// Apply a qty delta to the cart entry represented by a product card.
+// delta > 0 adds/increments (capped by MAX_QTY_PER_ITEM), delta < 0 decrements
+// and removes the row when it hits zero.
+function changeCardQty(card, delta) {
+  const { key, name, price, unit } = readCardProduct(card);
+  const existing = cart[key];
+  if (delta > 0) {
+    if (existing) {
+      if (existing.qty < MAX_QTY_PER_ITEM) existing.qty += 1;
     } else if (Object.keys(cart).length < MAX_CART_ITEMS) {
       cart[key] = { name, price, unit, qty: 1 };
     }
-    renderCart();
+  } else if (delta < 0 && existing) {
+    existing.qty -= 1;
+    if (existing.qty <= 0) delete cart[key];
+  }
+  renderCart(); // renderCart() also invokes syncProductCards()
+}
 
-    // Button feedback (safe DOM APIs – no innerHTML, no inline style assignment).
-    setBtnIcon(this, 'fa-solid fa-check');
-    this.classList.add('btn-add--ok');
-    setTimeout(() => {
-      setBtnIcon(this, 'fa-solid fa-plus');
-      this.classList.remove('btn-add--ok');
-    }, 1400);
+// Insert the hidden [− N +] counter next to every existing Add button and
+// wrap the pair in a shared .qty-slot so the swap doesn't reflow the price row.
+function initProductCards() {
+  document.querySelectorAll('.pcard .btn-add').forEach(btn => {
+    // Guard against double-init (e.g. hot reload).
+    if (btn.parentElement?.classList.contains('qty-slot')) return;
+
+    const slot = document.createElement('div');
+    slot.className = 'qty-slot';
+    btn.parentNode.insertBefore(slot, btn);
+    slot.appendChild(btn);
+
+    const counter = document.createElement('div');
+    counter.className = 'qty-inline is-hidden';
+    counter.setAttribute('role', 'group');
+    counter.setAttribute('aria-label', 'Item quantity');
+
+    const minus = document.createElement('button');
+    minus.type = 'button';
+    minus.className = 'qi-btn qi-minus';
+    minus.dataset.op = '-';
+    minus.setAttribute('aria-label', 'Decrease quantity');
+    minus.textContent = '\u2212'; // real minus sign
+
+    const num = document.createElement('span');
+    num.className = 'qi-num';
+    num.setAttribute('aria-live', 'polite');
+    num.textContent = '0';
+
+    const plus = document.createElement('button');
+    plus.type = 'button';
+    plus.className = 'qi-btn qi-plus';
+    plus.dataset.op = '+';
+    plus.setAttribute('aria-label', 'Increase quantity');
+    plus.textContent = '+';
+
+    counter.appendChild(minus);
+    counter.appendChild(num);
+    counter.appendChild(plus);
+    slot.appendChild(counter);
   });
+}
+
+// Reflect current cart state on the product cards: show the counter (with the
+// live qty) if the item is in the cart, otherwise show the Add button.
+function syncProductCards() {
+  document.querySelectorAll('.pcard').forEach(card => {
+    const slot = card.querySelector('.qty-slot');
+    if (!slot) return;
+    const addBtn  = slot.querySelector('.btn-add');
+    const counter = slot.querySelector('.qty-inline');
+    if (!addBtn || !counter) return;
+
+    const { key } = readCardProduct(card);
+    const qty = cart[key]?.qty ?? 0;
+
+    if (qty > 0) {
+      counter.querySelector('.qi-num').textContent = String(qty);
+      addBtn.classList.add('is-hidden');
+      counter.classList.remove('is-hidden');
+    } else {
+      addBtn.classList.remove('is-hidden');
+      counter.classList.add('is-hidden');
+    }
+  });
+}
+
+initProductCards();
+
+/* ────────────────────────────────────────────────────────────────
+   PRODUCT IMAGE ZOOM + GALLERY — standard e-commerce lightbox
+
+   Tap any .pimg → opens #zoomDialog with the product's first image
+   at fit-to-screen. Tap the enlarged image once more → toggles a
+   2× zoom with drag/swipe pan (browser-native scrolling on the
+   stage). ESC key (native <dialog> behaviour), the ✕ button, or a
+   click on the backdrop all close the modal.
+
+   MULTIPLE IMAGES PER PRODUCT
+   ---------------------------
+   Extras are auto-detected — no HTML attribute required. The code
+   probes for sibling files sharing the main image's base name with
+   `_1`, `_2`, … suffixes, keeping the same extension:
+
+       main:   product_images/P1.jpg
+       extras: product_images/P1_1.jpg
+               product_images/P1_2.jpg
+               product_images/P1_3.jpg   (etc.)
+
+   Probing walks upward starting at `_1` and stops at the first
+   missing file (or the MAX_EXTRAS safety cap). To add a photo just
+   drop the next `_N` file into product_images/ and reload; to
+   remove one, delete the file. The "1 / N+1" badge, prev/next
+   arrows, counter and thumbnail strip appear only when extras are
+   found; otherwise the dialog behaves exactly like a single-image
+   lightbox. Left/Right arrow keys, on-screen buttons, thumbnail
+   clicks and horizontal swipes all navigate.
+
+   Each .pimg is promoted to a role="button" tabindex="0" element so
+   the zoom is reachable by keyboard (Enter / Space) and announces
+   itself correctly to screen readers. The image inside .pimg gets
+   `pointer-events:none` in CSS so the click always lands on .pimg,
+   regardless of whether the pointer hit the transparent gap around
+   the object-fit:cover art.
+   ──────────────────────────────────────────────────────────────── */
+function initProductZoom() {
+  const dialog    = document.getElementById('zoomDialog');
+  const imgEl     = document.getElementById('zoomImage');
+  const stage     = document.getElementById('zoomStage');
+  const caption   = document.getElementById('zoomDialogTitle');
+  const hint      = dialog?.querySelector('.zoom-hint');
+  const closeBt   = document.getElementById('zoomClose');
+  const prevBt    = document.getElementById('zoomPrev');
+  const nextBt    = document.getElementById('zoomNext');
+  const counterEl = document.getElementById('zoomCounter');
+  const thumbsEl  = document.getElementById('zoomThumbs');
+  if (!dialog || !imgEl || !stage || !closeBt) return;
+
+  // Hard cap so probing can't loop-DoS the browser if some misconfiguration
+  // ever caused an infinite chain of successful responses (e.g. a catch-all
+  // rewrite that returns the same image for every URL).
+  const MAX_EXTRAS = 12;
+
+  // Gallery state — one dialog serves every product, so it's fine to keep
+  // this here as function-scoped state.
+  let gallery = [];        // Array<{ src:string, alt:string }>
+  let galleryIndex = 0;
+  let swipeSuppressClick = false; // set true briefly after a real swipe
+
+  /* Split "…/P1.jpg?v=1#x" into base "…/P1", ext ".jpg", tail "?v=1#x" so
+     derived URLs can insert "_N" between base and ext while preserving any
+     query string / hash. Returns null if the URL has no extension. */
+  function splitImageUrl(url) {
+    const suffixMatch = /[?#]/.exec(url);
+    const suffixStart = suffixMatch ? suffixMatch.index : url.length;
+    const path = url.slice(0, suffixStart);
+    const tail = url.slice(suffixStart); // '' | '?…' | '#…' | '?…#…'
+    const dot  = path.lastIndexOf('.');
+    if (dot === -1) return null;
+    return { base: path.slice(0, dot), ext: path.slice(dot), tail };
+  }
+
+  /* Best-effort HEAD probe using <img>. Resolves true when the browser
+     decodes it, false on any network / 404 / decode failure. Safe under
+     the site's CSP (img-src covers same-origin product_images/). */
+  function probeImage(src) {
+    return new Promise(resolve => {
+      const probe = new Image();
+      probe.onload  = () => resolve(true);
+      probe.onerror = () => resolve(false);
+      probe.src = src;
+    });
+  }
+
+  /* Discover extras for a card by walking _1, _2, … until a probe fails.
+     Cached on the card element as `card._extrasPromise` so repeated opens
+     — and the badge init in preparePimgs() — share one request chain. */
+  function discoverExtras(card) {
+    if (card._extrasPromise) return card._extrasPromise;
+    card._extrasPromise = (async () => {
+      const mainImg = card.querySelector('.pimg img');
+      if (!mainImg) return [];
+      const mainSrc = mainImg.currentSrc || mainImg.src;
+      const mainAlt = mainImg.alt || '';
+      const parts   = splitImageUrl(mainSrc);
+      if (!parts) return [];
+      const found = [];
+      for (let i = 1; i <= MAX_EXTRAS; i++) {
+        const src = `${parts.base}_${i}${parts.ext}${parts.tail}`;
+        // Sequential (not parallel) because as soon as one misses we stop —
+        // parallel probing would issue MAX_EXTRAS requests for every card
+        // on every load.
+        // eslint-disable-next-line no-await-in-loop
+        const ok = await probeImage(src);
+        if (!ok) break;
+        found.push({ src, alt: `${mainAlt} \u2014 image ${i + 1}` });
+      }
+      return found;
+    })();
+    return card._extrasPromise;
+  }
+
+  /* Build the full gallery list (main + discovered extras) for a card. */
+  async function galleryForCard(card) {
+    const mainImg = card?.querySelector('.pimg img');
+    if (!mainImg) return [];
+    const mainSrc = mainImg.currentSrc || mainImg.src;
+    const mainAlt = mainImg.alt || '';
+    const extras  = await discoverExtras(card);
+    return [{ src: mainSrc, alt: mainAlt }, ...extras];
+  }
+
+  function preparePimgs() {
+    document.querySelectorAll('.pcard .pimg').forEach(pimg => {
+      if (pimg.dataset.zoomReady === '1') return;
+      const inner = pimg.querySelector('img');
+      if (!inner) return;
+      pimg.setAttribute('role', 'button');
+      pimg.setAttribute('tabindex', '0');
+      pimg.setAttribute('aria-label',
+        `View larger image of ${inner.alt || 'product'}`);
+      pimg.dataset.zoomReady = '1';
+
+      // Multi-image affordance ("1/N" pill). Applied via a data attribute
+      // that .pimg[data-count]::after reads through CSS attr() — no extra
+      // DOM node, and toggling the attribute cleanly removes the badge.
+      // Kick off probing asynchronously so the initial paint isn't blocked;
+      // the badge appears once discovery settles.
+      const card = pimg.closest('.pcard');
+      if (!card) return;
+      discoverExtras(card).then(extras => {
+        if (extras.length > 0) {
+          pimg.dataset.count = `1 / ${extras.length + 1}`;
+        } else {
+          delete pimg.dataset.count;
+        }
+      });
+    });
+  }
+  preparePimgs();
+
+  function updateCounter() {
+    if (!counterEl) return;
+    if (gallery.length <= 1) {
+      counterEl.textContent = '';
+      counterEl.classList.add('is-hidden');
+    } else {
+      counterEl.textContent = `${galleryIndex + 1} / ${gallery.length}`;
+      counterEl.classList.remove('is-hidden');
+    }
+  }
+
+  function updateThumbSelection() {
+    if (!thumbsEl) return;
+    thumbsEl.querySelectorAll('.zoom-thumb').forEach((b, i) => {
+      const on = i === galleryIndex;
+      b.classList.toggle('is-active', on);
+      b.setAttribute('aria-selected', String(on));
+      if (on) {
+        // Keep the active thumb visible in the horizontal scroller.
+        try {
+          b.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+        } catch { /* older browsers – no-op */ }
+      }
+    });
+  }
+
+  function buildThumbs() {
+    if (!thumbsEl) return;
+    while (thumbsEl.firstChild) thumbsEl.firstChild.remove();
+    const many = gallery.length > 1;
+    thumbsEl.classList.toggle('is-hidden', !many);
+    if (prevBt) prevBt.classList.toggle('is-hidden', !many);
+    if (nextBt) nextBt.classList.toggle('is-hidden', !many);
+    if (!many) return;
+
+    gallery.forEach((item, i) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'zoom-thumb';
+      btn.setAttribute('role', 'tab');
+      btn.setAttribute('aria-label', `Show image ${i + 1} of ${gallery.length}`);
+      btn.dataset.index = String(i);
+      const img = document.createElement('img');
+      img.src = item.src;
+      img.alt = '';
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      btn.appendChild(img);
+      thumbsEl.appendChild(btn);
+    });
+  }
+
+  function setZoomed(on) {
+    dialog.classList.toggle('is-zoomed', !!on);
+    if (hint) {
+      // textContent avoids any HTML parsing (CSP-friendly and safe).
+      hint.lastChild.nodeValue = on
+        ? ' Tap image to zoom out'
+        : ' Tap image to zoom in';
+    }
+    // Reset scroll to top-left when leaving zoomed state so the next open
+    // (or the next gallery step) starts predictably centred.
+    if (!on) stage.scrollTo({ left: 0, top: 0, behavior: 'auto' });
+  }
+
+  function showGalleryImage(idx) {
+    if (!gallery.length) return;
+    const len = gallery.length;
+    galleryIndex = ((idx % len) + len) % len; // safe wrap-around
+    const item = gallery[galleryIndex];
+    imgEl.src = item.src;
+    imgEl.alt = item.alt;
+    if (caption) caption.textContent = item.alt;
+    setZoomed(false);
+    updateCounter();
+    updateThumbSelection();
+  }
+
+  async function openZoom(card) {
+    if (!card) return;
+    gallery = await galleryForCard(card);
+    if (!gallery.length) return;
+    buildThumbs();
+    showGalleryImage(0);
+    if (typeof dialog.showModal === 'function') {
+      dialog.showModal();
+    } else {
+      // Ancient browsers without <dialog>: fall back to attribute open.
+      dialog.setAttribute('open', '');
+    }
+  }
+
+  function closeZoom() {
+    if (typeof dialog.close === 'function') {
+      dialog.close();
+    } else {
+      dialog.removeAttribute('open');
+    }
+    setZoomed(false);
+    imgEl.removeAttribute('src');
+    gallery = [];
+    galleryIndex = 0;
+  }
+
+  // Open handler — delegated on the page so dynamically-added cards work.
+  document.addEventListener('click', (ev) => {
+    // Don't hijack the Add button or its counter controls.
+    if (ev.target.closest('.btn-add, .qi-btn, .qty-slot')) return;
+    const pimg = ev.target.closest('.pcard .pimg');
+    if (!pimg) return;
+    openZoom(pimg.closest('.pcard'));
+  });
+
+  // Keyboard: Enter/Space on a focused .pimg opens; ArrowLeft/Right navigate
+  // when the dialog is already open and the product has >1 image.
+  document.addEventListener('keydown', (ev) => {
+    if (dialog.open) {
+      if (gallery.length > 1) {
+        if (ev.key === 'ArrowLeft')  { ev.preventDefault(); showGalleryImage(galleryIndex - 1); return; }
+        if (ev.key === 'ArrowRight') { ev.preventDefault(); showGalleryImage(galleryIndex + 1); return; }
+      }
+      return;
+    }
+    if (ev.key !== 'Enter' && ev.key !== ' ' && ev.key !== 'Spacebar') return;
+    const pimg = ev.target.closest?.('.pcard .pimg');
+    if (!pimg || document.activeElement !== pimg) return;
+    ev.preventDefault(); // stop Space from scrolling the page
+    openZoom(pimg.closest('.pcard'));
+  });
+
+  // Prev / Next arrows. stopPropagation so the stage's zoom-toggle click
+  // handler doesn't also fire on the same bubble.
+  prevBt?.addEventListener('click', (ev) => {
+    ev.stopPropagation();
+    if (gallery.length > 1) showGalleryImage(galleryIndex - 1);
+  });
+  nextBt?.addEventListener('click', (ev) => {
+    ev.stopPropagation();
+    if (gallery.length > 1) showGalleryImage(galleryIndex + 1);
+  });
+
+  // Thumbnail clicks — delegated on the thumbs strip.
+  thumbsEl?.addEventListener('click', (ev) => {
+    const t = ev.target.closest?.('.zoom-thumb');
+    if (!t) return;
+    ev.stopPropagation();
+    const idx = Number.parseInt(t.dataset.index || '0', 10);
+    if (Number.isFinite(idx)) showGalleryImage(idx);
+  });
+
+  // Toggle 2× zoom on tap of the enlarged image itself.
+  stage.addEventListener('click', () => {
+    if (!dialog.open) return;
+    if (swipeSuppressClick) { swipeSuppressClick = false; return; }
+    setZoomed(!dialog.classList.contains('is-zoomed'));
+  });
+
+  // Horizontal swipe for prev/next on touch devices (only when NOT zoomed;
+  // once zoomed, native overflow:auto pan wins). Ignored for mouse pointers
+  // – desktop users have the arrows / arrow keys / thumbs.
+  let swipeStartX = 0, swipeStartY = 0, swipeId = -1;
+  stage.addEventListener('pointerdown', (ev) => {
+    if (dialog.classList.contains('is-zoomed')) return;
+    if (ev.pointerType === 'mouse') return;
+    swipeId = ev.pointerId;
+    swipeStartX = ev.clientX;
+    swipeStartY = ev.clientY;
+  });
+  stage.addEventListener('pointerup', (ev) => {
+    if (ev.pointerId !== swipeId) return;
+    swipeId = -1;
+    if (gallery.length <= 1) return;
+    const dx = ev.clientX - swipeStartX;
+    const dy = ev.clientY - swipeStartY;
+    // Threshold: 40 px and predominantly horizontal.
+    if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
+    // Suppress the synthetic click that follows a tap-ended-as-swipe so the
+    // stage click handler doesn't also toggle zoom on the newly-shown image.
+    swipeSuppressClick = true;
+    showGalleryImage(galleryIndex + (dx < 0 ? 1 : -1));
+  });
+  stage.addEventListener('pointercancel', () => { swipeId = -1; });
+
+  // Explicit close-button.
+  closeBt.addEventListener('click', () => closeZoom());
+
+  // Backdrop click — a <dialog> reports a click as originating from the
+  // dialog element itself when the user clicks the ::backdrop area.
+  dialog.addEventListener('click', (ev) => {
+    if (ev.target !== dialog) return;
+    const r = dialog.getBoundingClientRect();
+    const inside =
+      ev.clientX >= r.left && ev.clientX <= r.right &&
+      ev.clientY >= r.top  && ev.clientY <= r.bottom;
+    if (!inside) closeZoom();
+  });
+
+  // The browser fires 'close' when ESC is pressed — reset gallery state so
+  // the next open starts fresh.
+  dialog.addEventListener('close', () => {
+    dialog.classList.remove('is-zoomed');
+    imgEl.removeAttribute('src');
+    gallery = [];
+    galleryIndex = 0;
+  });
+
+  // Expose a hook for any future code that appends new .pcard nodes
+  // (e.g. search / filter / pagination) — call to re-scan for badges
+  // and keyboard promotion without rebinding delegated listeners.
+  window.__krishiPreparePimgs = preparePimgs;
+}
+
+initProductZoom();
+
+// Single delegated click handler for both the Add button and the ± controls.
+// Delegated so future cards added dynamically (search, filter, pagination)
+// continue to work without re-binding.
+document.addEventListener('click', (ev) => {
+  const card = ev.target.closest('.pcard');
+  if (!card) return;
+
+  const addBtn = ev.target.closest('.btn-add');
+  if (addBtn) {
+    changeCardQty(card, +1);
+    return;
+  }
+
+  const qiBtn = ev.target.closest('.qi-btn');
+  if (qiBtn) {
+    changeCardQty(card, qiBtn.dataset.op === '+' ? +1 : -1);
+  }
 });
 
 /* Clear entire cart */
@@ -311,7 +1037,7 @@ document.getElementById('btnClearCart').addEventListener('click', () => {
      • pincode lookup restricted by CSP connect-src allow-list
      • geolocation is opt-in (button-triggered), not auto-requested
    ──────────────────────────────────────────────────────────────── */
-const CUSTOMER_STORAGE_KEY = 'gutpoint.customer.v1';
+const CUSTOMER_STORAGE_KEY = 'krishidakshina.customer.v1';
 const MAX_CNAME_LEN = 100;
 const MAX_ADDR_LEN  = 200;
 const MAX_CITY_LEN  = 100;
@@ -522,7 +1248,7 @@ document.getElementById('btnWaOrder').addEventListener('click', () => {
     : '';
 
   const msg =
-    `\uD83D\uDED2 *New Order \u2013 Gut Point*\n\n` +
+    `\uD83D\uDED2 *New Order \u2013 KrishiDakshina*\n\n` +
     `*Customer*\n` +
     `Name : ${dName.value.trim()}\n` +
     `Phone: +91 ${phone}\n\n` +
@@ -543,26 +1269,107 @@ document.getElementById('btnWaOrder').addEventListener('click', () => {
   );
 });
 
-/* ── Contact form ── */
+/* ── Contact form (Option C: WhatsApp handoff) ──
+   Constitution v2.1.0 P-V (Client-Only Architecture): no backend, no third-party
+   form endpoint. Enquiries are handed off to WhatsApp using the same pattern as
+   the order flow. Any migration off this handoff requires a MINOR constitution
+   amendment + CSP allow-list update + declared anti-spam mechanism. */
+function isPlausibleEmail(email) {
+  const s = String(email || '').trim();
+  const at = s.indexOf('@');
+  if (at <= 0 || at !== s.lastIndexOf('@')) return false;
+  const local = s.slice(0, at);
+  const domain = s.slice(at + 1);
+  if (!local || !domain) return false;
+  if (domain.startsWith('.') || domain.endsWith('.')) return false;
+  const dot = domain.lastIndexOf('.');
+  if (dot <= 0 || dot >= domain.length - 2) return false;
+  if (/\s/.test(s)) return false;
+  return true;
+}
 document.getElementById('cf').addEventListener('submit', function (e) {
   e.preventDefault();
+
   const fn  = document.getElementById('fn').value.trim();
+  const ln  = document.getElementById('ln').value.trim();
   const em  = document.getElementById('em').value.trim();
+  const ph  = document.getElementById('ph').value.trim();
+  const sub = document.getElementById('sub').value.trim();
   const msg = document.getElementById('msg').value.trim();
-  if (!fn || !em || !msg) { alert('Please fill in your name, email, and message.'); return; }
+
+  const errEl = document.getElementById('cf-err');
+  const okEl  = document.getElementById('form-ok');
+  const showErr = (t) => {
+    errEl.textContent = t;
+    errEl.style.display = 'block';
+    okEl.style.display  = 'none';
+  };
+  errEl.style.display = 'none';
+  okEl.style.display  = 'none';
+
+  // Required fields
+  if (!fn)  return showErr('Please enter your first name.');
+  if (!em)  return showErr('Please enter your email address.');
+  if (!msg) return showErr('Please write a message.');
+
+  // Basic email shape (client-side only)
+  if (!isPlausibleEmail(em)) {
+    return showErr('That email does not look right — please double-check.');
+  }
+
+  // Optional phone — if supplied, must match Indian mobile pattern
+  const phoneClean = ph ? normalizePhone(ph) : '';
+  if (ph && !isValidPhone(ph)) {
+    return showErr('Phone should be a 10-digit Indian mobile starting with 6-9.');
+  }
+
+  // Build WhatsApp message
+  const nameLine = ln ? `${fn} ${ln}` : fn;
+  const waMsg =
+    `\uD83D\uDCAC *New Enquiry \u2013 KrishiDakshina*\n\n` +
+    `*From*\n` +
+    `Name : ${nameLine}\n` +
+    `Email: ${em}\n` +
+    (phoneClean ? `Phone: +91 ${phoneClean}\n` : '') +
+    `\n*Topic*: ${sub || 'General Enquiry'}\n\n` +
+    `*Message*\n${msg}`;
+
+  const encoded = encodeURIComponent(waMsg);
+  if (encoded.length > MAX_MSG_LEN) {
+    return showErr('Message is too long — please shorten and try again.');
+  }
+
   const btn = this.querySelector('.btn-send');
   btn.disabled = true;
   setBtnIcon(btn, 'fa-solid fa-spinner fa-spin');
-  btn.append(' Sending\u2026');
+  btn.append(' Opening WhatsApp\u2026');
+
+  const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encoded}`;
+  let pageBackgrounded = false;
+  const onVisibility = () => {
+    if (document.visibilityState === 'hidden') pageBackgrounded = true;
+  };
+  document.addEventListener('visibilitychange', onVisibility, { passive: true });
+
+  // Some browsers (notably Safari with security flags) may return null even when
+  // the new tab opens successfully, so do not use handle truthiness as the only signal.
+  const win = window.open(waUrl, '_blank', 'noopener,noreferrer');
+
   setTimeout(() => {
-    this.reset();
+    document.removeEventListener('visibilitychange', onVisibility);
+
     btn.disabled = false;
-    setBtnIcon(btn, 'fa-solid fa-paper-plane');
-    btn.append(' Send Message');
-    const ok = document.getElementById('form-ok');
-    ok.style.display = 'block';
-    setTimeout(() => { ok.style.display = 'none'; }, 5000);
-  }, 1200);
+    setBtnIcon(btn, 'fa-brands fa-whatsapp');
+    btn.append(' Send via WhatsApp');
+    const opened = Boolean(win) || pageBackgrounded;
+    if (opened) {
+      this.reset();
+      okEl.style.display = 'block';
+      setTimeout(() => { okEl.style.display = 'none'; }, 6000);
+    } else {
+      showErr('Could not open WhatsApp. Please allow pop-ups or use the "Chat on WhatsApp" button.');
+    }
+  }, 300);
 });
 
 /* ── Hero particles (decorative – uses CSPRNG helper) ── */
@@ -580,3 +1387,61 @@ for (let i = 0; i < 20; i++) {
   p.style.opacity           = (randFloat() * 0.12 + 0.03).toFixed(3);
   ptcEl.appendChild(p);
 }
+
+/* ─────────────────────────────────────────────────────────────
+   DRAFT — Legal modal handler.
+   Not active. Kept commented so nothing in the live page runs.
+   Uncomment together with the HTML + CSS drafts to enable the
+   "View Terms / Privacy" modal.
+
+   Behaviour when enabled:
+     - Single delegated click handler: opens the target <dialog>
+       via showModal(), closes on any [data-close] element, and
+       closes on a click on the backdrop itself.
+     - Mirrors the .legal-body inner HTML from the on-page
+       #privacy / #terms sections into the dialog body the first
+       time each dialog is opened, so those sections remain the
+       single source of truth. When you later split policies into
+       standalone pages, replace cloneContent() with a fetch() of
+       the standalone URL and set innerHTML from the response.
+   ─────────────────────────────────────────────────────────────
+(function initLegalDialogs() {
+  const map = {
+    'terms-dialog':   { src: '#terms',   body: '#terms-dialog-body'   },
+    'privacy-dialog': { src: '#privacy', body: '#privacy-dialog-body' },
+  };
+
+  function cloneContent(dialogId) {
+    const cfg = map[dialogId];
+    if (!cfg) return;
+    const body = document.querySelector(cfg.body);
+    if (!body || body.dataset.hydrated === '1') return;
+    const src = document.querySelector(cfg.src + ' .legal-body');
+    if (!src) return;
+    body.innerHTML = src.innerHTML;
+    body.dataset.hydrated = '1';
+  }
+
+  document.addEventListener('click', (e) => {
+    const opener = e.target.closest('[data-open]');
+    if (opener) {
+      const id = opener.dataset.open;
+      const dlg = document.getElementById(id);
+      if (dlg && typeof dlg.showModal === 'function') {
+        cloneContent(id);
+        dlg.showModal();
+      }
+      return;
+    }
+    const closer = e.target.closest('[data-close]');
+    if (closer) {
+      closer.closest('dialog')?.close();
+      return;
+    }
+    if (e.target.tagName === 'DIALOG' && e.target.classList.contains('legal-dialog')) {
+      e.target.close();
+    }
+  });
+})();
+   ───────────────────────────────────────────────────────────── */
+

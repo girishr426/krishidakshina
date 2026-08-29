@@ -2,15 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Gut Point – Farm-fresh groceries delivered to your doorstep. Organic produce, dairy, and pantry essentials.">
-  <meta name="keywords" content="grocery delivery, organic, fresh produce, farm to table, Gut Point, India">
-  <meta name="author" content="Gut Point">
-  <meta property="og:title" content="Gut Point – Fresh Groceries Delivered">
-  <meta property="og:description" content="Farm-fresh groceries delivered to your door. Quality you can taste.">
+  <!-- interactive-widget=resizes-content: on supporting browsers (Chrome/Edge/
+       Android WebView), the on-screen keyboard shrinks the LAYOUT viewport
+       (not just the visual viewport), so 100dvh / fixed drawers reflow
+       correctly and bottom form fields don't get hidden behind the keyboard. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+  <meta name="theme-color" content="#28a745">
+  <meta name="description" content="KrishiDakshina – Farm-fresh Natural Nourishing Produce delivered to your doorstep. Fresh produce, dairy, and pantry essentials.">
+  <meta name="keywords" content="grocery delivery, fresh produce, farm to table, KrishiDakshina, India">
+  <meta name="author" content="KrishiDakshina">
+  <meta property="og:title" content="KrishiDakshina – Fresh Natural Nourishing Produce Delivered">
+  <meta property="og:description" content="Farm-fresh Natural Nourishing Produce delivered to your door. Quality you can taste.">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
-  <title>Gut Point – Fresh Groceries Delivered</title>
+  <title>KrishiDakshina – Fresh Natural Nourishing Produce Delivered</title>
 
   <!--
     Security headers (best-effort via <meta>; prefer real HTTP headers when served through a
@@ -54,7 +59,7 @@
             <circle cx="12" cy="12" r="2" fill="#20c997"/>
           </svg>
         </div>
-        Gut Point
+        KrishiDakshina
       </a>
 
       <ul class="nav-links">
@@ -62,7 +67,6 @@
         <li><a href="#products">Products</a></li>
         <li><a href="#about">About</a></li>
         <li><a href="#contact">Contact</a></li>
-        <li><a href="#contact" class="nav-cta">Order Now</a></li>
       </ul>
 
       <!-- Cart icon (all screen sizes) -->
@@ -81,7 +85,6 @@
     <a href="#products">Products</a>
     <a href="#about">About</a>
     <a href="#contact">Contact</a>
-    <a href="#contact" class="mob-cta">Order Now →</a>
   </div>
 </nav>
 
@@ -101,39 +104,51 @@
           Now delivering in your city
         </div>
         <h1 class="hero-h1">
-          Fresh Groceries,<br>
-          <span class="hl">Straight from the Farm</span>
+          Wholesome Harvests,<br>
+          <span class="hl">Full of Goodness,<br>Straight from the Farm</span>
         </h1>
-        <p class="hero-sub">
-          From sun-kissed produce to pantry staples — Gut Point delivers
-          farm-fresh quality to your kitchen, every single day.
+        <p class="hero-sub hero-sub--export">
+          <i class="fa-solid fa-earth-asia" aria-hidden="true"></i>
+          <span><strong>Export of farm products</strong> &mdash; bulk &amp; international enquiries welcome.</span>
         </p>
         <div class="hero-btns">
           <a href="#products" class="btn btn-primary">
             <i class="fa-solid fa-basket-shopping"></i> Shop Now
           </a>
           <a href="#about" class="btn btn-ghost">Our Story</a>
+          <a href="#contact" class="btn btn-ghost btn-export">
+            <i class="fa-solid fa-earth-asia" aria-hidden="true"></i> Export Enquiry
+          </a>
         </div>
+        <p class="hero-sub">
+          SSHHH!!! Your Health, Your Secret.
+          We're quietly growing, one harvest at a time.
+          Join us early and discover freshness before everyone else.
+        </p>
+        <p class="hero-sub">
+          From sun-kissed produce to pantry staples — KrishiDakshina delivers
+          farm-fresh quality to your kitchen.
+
+          Your Trusted Partner for Harvest Produce.
+          <a href="#contact" class="hero-contact-link">Contact Us</a>.
+        </p>
         <div class="hero-stats">
-          <div><div class="stat-n">500+</div><div class="stat-l">Products</div></div>
-          <div><div class="stat-n">10K+</div><div class="stat-l">Customers</div></div>
-          <div><div class="stat-n">50+</div><div class="stat-l">Farm Partners</div></div>
+          <div><div class="stat-n">10+</div><div class="stat-l">Products</div></div>
+          <div><div class="stat-n">1K+</div><div class="stat-l">Customers</div></div>
+          <div><div class="stat-n">50+</div><div class="stat-l">Farm Community</div></div>
         </div>
       </div>
 
       <!-- Visual card -->
       <div class="hero-vis">
-        <div class="chip chip-1">
-          <span class="chip-em">🚚</span>
-          <div><div class="chip-sub">Delivery</div>Same Day</div>
-        </div>
         <div class="hero-card-wrap">
           <div class="hc-main">
-            <div class="hc-img">🥗</div>
+            <div class="hc-img hc-img-sachet">
+              <img src="product_images/index0.png" alt="Harvest Nutri Sachet" data-fallback="🥗">
+            </div>
             <div class="hc-body">
-              <span class="hc-cat">🌿 Organic</span>
-              <div class="hc-name">Seasonal Veggie Box</div>
-              <div class="hc-price">₹299 <small class="hc-unit-sm">/ box</small></div>
+              <span class="hc-cat">🌿 Nature's Intelligence</span>
+              <div class="hc-name">Harvest Nutri Sachet</div>
             </div>
           </div>
           <div class="hc-foot">
@@ -165,11 +180,11 @@
     <div class="strip-row">
       <div class="strip-item">
         <div class="strip-ico"><i class="fa-solid fa-truck-fast"></i></div>
-        <div><div class="strip-t">Same-Day Delivery</div><div class="strip-d">Order before 11 AM</div></div>
+        <div><div class="strip-t">Weekly delivery at your convenient time</div></div>
       </div>
       <div class="strip-item">
         <div class="strip-ico"><i class="fa-solid fa-leaf"></i></div>
-        <div><div class="strip-t">100% Organic</div><div class="strip-d">Certified fresh produce</div></div>
+        <div><div class="strip-t">With Natures Intelligence</div></div>
       </div>
       <div class="strip-item">
         <div class="strip-ico"><i class="fa-solid fa-shield-halved"></i></div>
@@ -196,9 +211,20 @@
       <div>
         <span class="section-tag"><i class="fa-solid fa-cart-shopping"></i> Our Selection</span>
         <h2 class="section-title">Fresh <span>Bestsellers</span></h2>
-        <p class="section-desc">Hand-picked daily from our farm partners for peak freshness.</p>
+        <p class="section-desc">Hand-picked from our farm community for peak freshness.</p>
       </div>
-      <a href="#contact" class="btn btn-dark"><i class="fa-solid fa-grid-2"></i>&nbsp; View All</a>
+
+      <div class="prod-note" role="note">
+        <i class="fa-solid fa-seedling" aria-hidden="true"></i>
+        <p>
+          <strong>We&rsquo;re just getting started.</strong>
+          Not all categories are live yet &mdash; we&rsquo;re gradually onboarding farms and
+          expanding our range. We also
+          <strong>export farm products</strong> for bulk and international enquiries.
+          Don&rsquo;t see what you need?
+          <a href="#contact">Message us on WhatsApp</a> and we&rsquo;ll try to source it for you.
+        </p>
+      </div>
     </div>
 
     <!--
@@ -224,227 +250,127 @@
     ║                                                                  ║
     ║  4. HOW TO LINK THE IMAGE                                        ║
     ║     In each <article class="pcard"> below, update the src:      ║
-    ║       <img src="product_images/YOUR-FILE-NAME.jpg"               ║
+    ║       <img src="product_images/YOUR-FILE-NAME.svg"               ║
     ║            alt="Your Product Name"                               ║
     ║            data-fallback="🍅">                                    ║
     ║     The data-fallback emoji shows if the file is missing         ║
     ║     (handled by a delegated listener in index.js – no inline JS) ║
     ║                                                                  ║
     ║  5. EXAMPLE FILE NAMES ALREADY WIRED UP                         ║
-    ║     product_images/tomato.jpg       → Card 1                     ║
-    ║     product_images/eggs.jpg         → Card 2                     ║
-    ║     product_images/spinach.jpg      → Card 3                     ║
-    ║     product_images/bread.jpg        → Card 4                     ║
-    ║     product_images/mango.jpg        → Card 5                     ║
-    ║     product_images/milk.jpg         → Card 6                     ║
-    ║     product_images/carrot.jpg       → Card 7                     ║
-    ║     product_images/yogurt.jpg       → Card 8                     ║
-    ║     product_images/brown-rice.jpg   → Card 9                     ║
-    ║     product_images/avocado.jpg      → Card 10                    ║
-    ║     product_images/mixed-nuts.jpg   → Card 11                    ║
-    ║     product_images/turmeric.jpg     → Card 12                    ║
+    ║     product_images/P1.jpg           → Card 1 (Groundnut Oil)     ║
+    ║     product_images/P2.jpg           → Card 2 (Coconut Oil)       ║
+    ║     product_images/P3.jpg           → Card 3 (Honey)             ║
+    ║     product_images/P4.jpg           → Card 4 (Finger Millet)     ║
+    ║     product_images/P5.jpg           → Card 5 (Harvest Nutri)     ║
+    ║     product_images/P6.jpg           → Card 6 (Jaggery Powder)    ║
     ║                                                                  ║
+    ║  MULTIPLE IMAGES PER PRODUCT                                     ║
+    ║  ───────────────────────────                                     ║
+    ║  Extras are auto-detected — no HTML attribute required. Drop a   ║
+    ║  file named P{n}_1.jpg, P{n}_2.jpg, … next to the main P{n}.jpg  ║
+    ║  and the zoom dialog will pick it up on the next reload. Probing ║
+    ║  starts at _1 and stops at the first missing file, so numbering  ║
+    ║  must be contiguous. Cards with no extras stay single-image and  ║
+    ║  the gallery UI (badge / arrows / thumbs) hides itself.          ║
     ╚══════════════════════════════════════════════════════════════════╝
     -->
     <div class="prod-grid">
 
-      <!-- ── Card 1 ── src="product_images/tomato.jpg" | 600×600 px JPG/PNG, max 200 KB -->
+      <!-- ── Card 1 ── src="product_images/P1.jpg" | Cold-Pressed Groundnut Oil -->
       <article class="pcard fi">
-        <span class="pbadge org">Organic</span>
+        <span class="pbadge org">Cold-Pressed</span>
         <div class="pimg">
-          <img src="product_images/tomato.jpg" alt="Organic Tomatoes" data-fallback="🍅">
+          <img src="product_images/P1.jpg" alt="Cold-Pressed Groundnut Oil" data-fallback="🥜">
         </div>
         <div class="pbody">
-          <span class="pcat">Vegetables</span>
-          <h3 class="pname">Organic Tomatoes</h3>
-          <p class="pdesc">Vine-ripened, sun-kissed tomatoes from certified organic farms. Sweet, juicy, and packed with flavour.</p>
+          <span class="pcat">Oils</span>
+          <h3 class="pname">Cold-Pressed Groundnut Oil</h3>
+          <p class="pdesc">Traditional wood-pressed groundnut oil, extracted at low temperatures to retain natural aroma and nutrients. No refining, no chemicals — just pure, honest oil.</p>
           <div class="pfoot">
-            <div class="pprice">₹89 <small>/ kg</small></div>
+            <div class="pprice">₹280 <small>/ litre</small></div>
             <button class="btn-add" aria-label="Add to cart"><i class="fa-solid fa-plus"></i></button>
           </div>
         </div>
       </article>
 
-      <!-- ── Card 2 ── src="product_images/eggs.jpg" | 600×600 px JPG/PNG, max 200 KB -->
+      <!-- ── Card 2 ── src="product_images/P2.jpg" | Cold-Pressed Coconut Oil -->
       <article class="pcard fi">
-        <span class="pbadge hot">Fresh Pick</span>
+        <span class="pbadge org">Cold-Pressed</span>
         <div class="pimg">
-          <img src="product_images/eggs.jpg" alt="Farm Fresh Eggs" data-fallback="🥚">
+          <img src="product_images/P2.jpg" alt="Cold-Pressed Coconut Oil" data-fallback="🥥">
         </div>
         <div class="pbody">
-          <span class="pcat">Dairy &amp; Eggs</span>
-          <h3 class="pname">Farm Fresh Eggs</h3>
-          <p class="pdesc">Free-range, cage-free eggs from happy hens. Rich golden yolks and firm whites every time.</p>
+          <span class="pcat">Oils</span>
+          <h3 class="pname">Cold-Pressed Coconut Oil</h3>
+          <p class="pdesc">Traditional wood-pressed coconut oil from sun-dried coastal Karnataka copra. Unrefined and unbleached — retains its natural aroma, sweetness, and every drop of goodness.</p>
           <div class="pfoot">
-            <div class="pprice">₹129 <small>/ dozen</small></div>
+            <div class="pprice">₹320 <small>/ litre</small></div>
             <button class="btn-add" aria-label="Add to cart"><i class="fa-solid fa-plus"></i></button>
           </div>
         </div>
       </article>
 
-      <!-- ── Card 3 ── src="product_images/spinach.jpg" | 600×600 px JPG/PNG, max 200 KB -->
+      <!-- ── Card 3 ── src="product_images/P3.jpg" | Honey -->
       <article class="pcard fi">
-        <span class="pbadge org">Organic</span>
+        <span class="pbadge org">Raw &amp; Unfiltered</span>
         <div class="pimg">
-          <img src="product_images/spinach.jpg" alt="Baby Spinach" data-fallback="🥬">
+          <img src="product_images/P3.jpg" alt="Honey" data-fallback="🍯">
         </div>
         <div class="pbody">
-          <span class="pcat">Leafy Greens</span>
-          <h3 class="pname">Baby Spinach</h3>
-          <p class="pdesc">Tender organic baby spinach, harvested at peak nutrition. Perfect for salads, smoothies &amp; sautés.</p>
+          <span class="pcat">Naturals</span>
+          <h3 class="pname">Honey</h3>
+          <p class="pdesc">Natural honey harvested from bees raised on our own farm. Unheated, unfiltered, and free of additives — pure golden goodness straight from the hive.</p>
           <div class="pfoot">
-            <div class="pprice">₹55 <small>/ 250 g</small></div>
+            <div class="pprice">₹350 <small>/ 500 g</small></div>
             <button class="btn-add" aria-label="Add to cart"><i class="fa-solid fa-plus"></i></button>
           </div>
         </div>
       </article>
 
-      <!-- ── Card 4 ── src="product_images/bread.jpg" | 600×600 px JPG/PNG, max 200 KB -->
+      <!-- ── Card 4 ── src="product_images/P4.jpg" | Finger Millet -->
       <article class="pcard fi">
         <div class="pimg">
-          <img src="product_images/bread.jpg" alt="Multigrain Bread" data-fallback="🍞">
-        </div>
-        <div class="pbody">
-          <span class="pcat">Bakery</span>
-          <h3 class="pname">Multigrain Bread</h3>
-          <p class="pdesc">Stone-baked multigrain loaf loaded with seeds and ancient grains. No preservatives, no shortcuts.</p>
-          <div class="pfoot">
-            <div class="pprice">₹75 <small>/ loaf</small></div>
-            <button class="btn-add" aria-label="Add to cart"><i class="fa-solid fa-plus"></i></button>
-          </div>
-        </div>
-      </article>
-
-      <!-- ── Card 5 ── src="product_images/mango.jpg" | 600×600 px JPG/PNG, max 200 KB -->
-      <article class="pcard fi">
-        <span class="pbadge sea">Seasonal</span>
-        <div class="pimg">
-          <img src="product_images/mango.jpg" alt="Alphonso Mangoes" data-fallback="🥭">
-        </div>
-        <div class="pbody">
-          <span class="pcat">Fruits</span>
-          <h3 class="pname">Alphonso Mangoes</h3>
-          <p class="pdesc">The king of mangoes, sourced directly from Ratnagiri. Fibre-free, ultra-sweet, and supremely aromatic.</p>
-          <div class="pfoot">
-            <div class="pprice">₹249 <small>/ kg</small></div>
-            <button class="btn-add" aria-label="Add to cart"><i class="fa-solid fa-plus"></i></button>
-          </div>
-        </div>
-      </article>
-
-      <!-- ── Card 6 ── src="product_images/milk.jpg" | 600×600 px JPG/PNG, max 200 KB -->
-      <article class="pcard fi">
-        <span class="pbadge org">Organic</span>
-        <div class="pimg">
-          <img src="product_images/milk.jpg" alt="Full Cream A2 Milk" data-fallback="🥛">
-        </div>
-        <div class="pbody">
-          <span class="pcat">Dairy</span>
-          <h3 class="pname">Full Cream A2 Milk</h3>
-          <p class="pdesc">Fresh A2 cow milk from grass-fed desi cows. Rich in natural fats and nutrients, delivered daily.</p>
-          <div class="pfoot">
-            <div class="pprice">₹65 <small>/ litre</small></div>
-            <button class="btn-add" aria-label="Add to cart"><i class="fa-solid fa-plus"></i></button>
-          </div>
-        </div>
-      </article>
-
-      <!-- ── Card 7 ── src="product_images/carrot.jpg" | 600×600 px JPG/PNG, max 200 KB -->
-      <article class="pcard fi">
-        <span class="pbadge org">Organic</span>
-        <div class="pimg">
-          <img src="product_images/carrot.jpg" alt="Organic Carrots" data-fallback="🥕">
-        </div>
-        <div class="pbody">
-          <span class="pcat">Vegetables</span>
-          <h3 class="pname">Organic Carrots</h3>
-          <p class="pdesc">Crunchy, naturally sweet carrots grown without pesticides. Great for juicing, cooking, or snacking.</p>
-          <div class="pfoot">
-            <div class="pprice">₹45 <small>/ kg</small></div>
-            <button class="btn-add" aria-label="Add to cart"><i class="fa-solid fa-plus"></i></button>
-          </div>
-        </div>
-      </article>
-
-      <!-- ── Card 8 ── src="product_images/yogurt.jpg" | 600×600 px JPG/PNG, max 200 KB -->
-      <article class="pcard fi">
-        <span class="pbadge hot">Fresh Pick</span>
-        <div class="pimg">
-          <img src="product_images/yogurt.jpg" alt="Greek Yogurt" data-fallback="🫩">
-        </div>
-        <div class="pbody">
-          <span class="pcat">Dairy</span>
-          <h3 class="pname">Greek Yogurt</h3>
-          <p class="pdesc">Thick, creamy probiotic-rich Greek yogurt. No artificial flavours — just pure cultured goodness.</p>
-          <div class="pfoot">
-            <div class="pprice">₹95 <small>/ 250 g</small></div>
-            <button class="btn-add" aria-label="Add to cart"><i class="fa-solid fa-plus"></i></button>
-          </div>
-        </div>
-      </article>
-
-      <!-- ── Card 9 ── src="product_images/brown-rice.jpg" | 600×600 px JPG/PNG, max 200 KB -->
-      <article class="pcard fi">
-        <div class="pimg">
-          <img src="product_images/brown-rice.jpg" alt="Brown Basmati Rice" data-fallback="🌾">
+          <img src="product_images/P4.jpg" alt="Finger Millet" data-fallback="🌾">
         </div>
         <div class="pbody">
           <span class="pcat">Grains</span>
-          <h3 class="pname">Brown Basmati Rice</h3>
-          <p class="pdesc">Whole-grain basmati with the bran intact. Nutty flavour, lower GI, and high in dietary fibre.</p>
+          <h3 class="pname">Finger Millet</h3>
+          <p class="pdesc">Whole finger millet (ragi) sun-dried and stone-cleaned from Karnataka farms. Naturally rich in calcium and iron — perfect for ragi mudde, dosa, porridge, and rotis.</p>
           <div class="pfoot">
-            <div class="pprice">₹120 <small>/ kg</small></div>
+            <div class="pprice">₹90 <small>/ kg</small></div>
             <button class="btn-add" aria-label="Add to cart"><i class="fa-solid fa-plus"></i></button>
           </div>
         </div>
       </article>
 
-      <!-- ── Card 10 ── src="product_images/avocado.jpg" | 600×600 px JPG/PNG, max 200 KB -->
-      <article class="pcard fi">
-        <span class="pbadge sea">Seasonal</span>
-        <div class="pimg">
-          <img src="product_images/avocado.jpg" alt="Ripe Avocados" data-fallback="🥑">
-        </div>
-        <div class="pbody">
-          <span class="pcat">Fruits</span>
-          <h3 class="pname">Ripe Avocados</h3>
-          <p class="pdesc">Buttery, heart-healthy avocados sourced from hill farms. Ready to eat, rich in good fats.</p>
-          <div class="pfoot">
-            <div class="pprice">₹149 <small>/ piece</small></div>
-            <button class="btn-add" aria-label="Add to cart"><i class="fa-solid fa-plus"></i></button>
-          </div>
-        </div>
-      </article>
-
-      <!-- ── Card 11 ── src="product_images/mixed-nuts.jpg" | 600×600 px JPG/PNG, max 200 KB -->
-      <article class="pcard fi">
-        <span class="pbadge org">Organic</span>
-        <div class="pimg">
-          <img src="product_images/mixed-nuts.jpg" alt="Mixed Nuts" data-fallback="🥜">
-        </div>
-        <div class="pbody">
-          <span class="pcat">Dry Fruits</span>
-          <h3 class="pname">Mixed Nuts &amp; Seeds</h3>
-          <p class="pdesc">Almonds, cashews, walnuts &amp; pumpkin seeds — roasted in small batches with zero oil or salt added.</p>
-          <div class="pfoot">
-            <div class="pprice">₹399 <small>/ 250 g</small></div>
-            <button class="btn-add" aria-label="Add to cart"><i class="fa-solid fa-plus"></i></button>
-          </div>
-        </div>
-      </article>
-
-      <!-- ── Card 12 ── src="product_images/turmeric.jpg" | 600×600 px JPG/PNG, max 200 KB -->
+      <!-- ── Card 5 ── src="product_images/P5.jpg" | Harvest Nutri Sachet -->
       <article class="pcard fi">
         <span class="pbadge hot">Bestseller</span>
         <div class="pimg">
-          <img src="product_images/turmeric.jpg" alt="Turmeric Powder" data-fallback="🟡">
+          <img src="product_images/P5.jpg" alt="Harvest Nutri Sachet" data-fallback="🥗">
         </div>
         <div class="pbody">
-          <span class="pcat">Spices</span>
-          <h3 class="pname">Pure Turmeric Powder</h3>
-          <p class="pdesc">High-curcumin turmeric stone-ground from heirloom varieties. Vibrant colour, strong aroma, zero fillers.</p>
+          <span class="pcat">Wellness</span>
+          <h3 class="pname">Harvest Nutri Sachet</h3>
+          <p class="pdesc">A daily nutrition sachet crafted from farm-sourced grains, seeds, and superfoods. Convenient single-serve packs — just mix, sip, and nourish.</p>
           <div class="pfoot">
-            <div class="pprice">₹75 <small>/ 100 g</small></div>
+            <div class="pprice">₹299 <small>/ box</small></div>
+            <button class="btn-add" aria-label="Add to cart"><i class="fa-solid fa-plus"></i></button>
+          </div>
+        </div>
+      </article>
+
+      <!-- ── Card 6 ── src="product_images/P6.jpg" | Natural Jaggery Powder -->
+      <article class="pcard fi">
+        <div class="pimg">
+          <img src="product_images/P6.jpg" alt="Natural Jaggery Powder" data-fallback="🟫">
+        </div>
+        <div class="pbody">
+          <span class="pcat">Sweeteners</span>
+          <h3 class="pname">Natural Jaggery Powder</h3>
+          <p class="pdesc">Chemical-free jaggery powder made from freshly pressed sugarcane. Rich in iron and minerals — a wholesome, healthier alternative to refined sugar.</p>
+          <div class="pfoot">
+            <div class="pprice">₹120 <small>/ 500 g</small></div>
             <button class="btn-add" aria-label="Add to cart"><i class="fa-solid fa-plus"></i></button>
           </div>
         </div>
@@ -462,9 +388,11 @@
     <div class="about-grid">
 
       <div class="about-vis fi">
-        <div class="about-img">🌾</div>
+        <div class="about-img">
+          <img src="product_images/index1.png" alt="Harvest Nutri Sachet" data-fallback="🥗">
+        </div>
         <div class="afc afc-1">
-          <div><div class="afc-n">50+</div><div class="afc-l">Farm Partners</div></div>
+          <div><div class="afc-n">50+</div><div class="afc-l">Farm Community</div></div>
           <i class="fa-solid fa-tractor afc-icon afc-icon-green"></i>
         </div>
         <div class="afc afc-2">
@@ -477,10 +405,9 @@
         <span class="section-tag"><i class="fa-solid fa-seedling"></i> Our Story</span>
         <h2 class="section-title">Where Fresh Meets <span>Your Doorstep</span></h2>
         <p class="section-desc">
-          Gut Point was born from a simple belief — everyone deserves access to fresh,
-          nutritious groceries without the hassle of searching for them. We partner directly
-          with local farmers and trusted suppliers to cut out the middleman, giving you better
-          quality at fairer prices, delivered straight to your kitchen.
+          KrishiDakshina was born from a simple belief — everyone deserves access to fresh,
+          nutritious bite without the hassle of searching for them. 
+          Backed by a strong community of local farmers, we bring fresh, high-quality produce directly from the farm to your kitchen at fair prices.
         </p>
 
         <div class="highlights">
@@ -520,15 +447,15 @@
       <i class="fa-solid fa-star"></i> Customer Love
     </span>
     <h2 class="section-title fi">What Our <span>Customers Say</span></h2>
-    <p class="section-desc fi">Real reviews from real families who trust Gut Point every week.</p>
+    <p class="section-desc fi">Real reviews from real families who trust KrishiDakshina every week. <!-- NOTE: placeholder testimonials (see spec OQ-04) --></p>
 
     <div class="rev-grid">
       <div class="rcard fi">
         <div class="stars">★★★★★</div>
-        <p class="rtext">"The freshness is unreal — my salads taste so much better with Gut Point greens. Delivery is always on time and the eco packaging is a thoughtful touch. Absolutely love it!"</p>
+        <p class="rtext">"The freshness is unreal — my salads taste so much better with KrishiDakshina greens. Delivery is always on time and the eco packaging is a thoughtful touch. Absolutely love it!"</p>
         <div class="rauthor">
           <div class="avt avt-p">P</div>
-          <div><div class="a-name">Priya Sharma</div><div class="a-title">Mumbai · Regular Customer</div></div>
+          <div><div class="a-name">Bhanu Prakash</div><div class="a-title">Bangalore · Regular Customer</div></div>
         </div>
       </div>
       <div class="rcard fi">
@@ -536,15 +463,15 @@
         <p class="rtext">"Switched from a big supermarket chain and never going back. The A2 milk and eggs are genuinely a cut above, and the prices are surprisingly competitive for this quality."</p>
         <div class="rauthor">
           <div class="avt avt-r">R</div>
-          <div><div class="a-name">Rahul Mehta</div><div class="a-title">Pune · Weekly Subscriber</div></div>
+          <div><div class="a-name">Deepak</div><div class="a-title">Tumkur · Weekly Subscriber</div></div>
         </div>
       </div>
       <div class="rcard fi">
         <div class="stars">★★★★★</div>
-        <p class="rtext">"The Alphonso mangoes this season were OUTSTANDING. Ordered twice already and the support team resolved my query within minutes. Highly recommend Gut Point!"</p>
+        <p class="rtext">"The Alphonso mangoes this season were OUTSTANDING. Ordered twice already and the support team resolved my query within minutes. Highly recommend KrishiDakshina!"</p>
         <div class="rauthor">
           <div class="avt avt-a">A</div>
-          <div><div class="a-name">Ananya Iyer</div><div class="a-title">Bangalore · Seasonal Buyer</div></div>
+          <div><div class="a-name">Komal</div><div class="a-title">Sira · Seasonal Buyer</div></div>
         </div>
       </div>
     </div>
@@ -570,21 +497,21 @@
           <div class="cico"><i class="fa-solid fa-location-dot"></i></div>
           <div>
             <div class="clbl">Address</div>
-            <div class="cval">123 Green Market Lane<br>Mumbai, Maharashtra – 400001</div>
+            <div class="cval">29 Kunagatanahalli Village<br>Sira, Tumkur – 572125</div>
           </div>
         </div>
         <div class="ccard">
           <div class="cico"><i class="fa-solid fa-phone"></i></div>
           <div>
             <div class="clbl">Phone</div>
-            <div class="cval"><a href="tel:+919876543210" class="link-plain">+91 98765 43210</a></div>
+            <div class="cval"><a href="tel:+918970059754" class="link-plain">+91 8970059754</a></div>
           </div>
         </div>
         <div class="ccard">
           <div class="cico"><i class="fa-solid fa-envelope"></i></div>
           <div>
             <div class="clbl">Email</div>
-            <div class="cval"><a href="mailto:hello@gutpoint.com" class="link-plain">hello@gutpoint.com</a></div>
+            <div class="cval"><a href="mailto:krishidakshina@gmail.com" class="link-plain">krishidakshina@gmail.com</a></div>
           </div>
         </div>
         <div class="ccard">
@@ -595,7 +522,7 @@
           </div>
         </div>
 
-        <a href="https://wa.me/919876543210?text=Hi%2C%20I%27m%20interested%20in%20Gut%20Point%20groceries!"
+        <a href="https://wa.me/918970059754?text=Hi%2C%20I%27m%20interested%20in%20KrishiDakshina%20Farm-fresh%20Natural%20Nourishing%20Produce!"
            class="btn-wa" target="_blank" rel="noopener noreferrer">
           <i class="fa-brands fa-whatsapp wa-ico-lg"></i>
           Chat on WhatsApp
@@ -611,20 +538,20 @@
           <div class="row2">
             <div class="fg">
               <label for="fn">First Name *</label>
-              <input type="text" id="fn" placeholder="Priya" required>
+              <input type="text" id="fn" placeholder="Chaitra" autocomplete="given-name" maxlength="50" required>
             </div>
             <div class="fg">
               <label for="ln">Last Name</label>
-              <input type="text" id="ln" placeholder="Sharma">
+              <input type="text" id="ln" placeholder="Girish" autocomplete="family-name" maxlength="50">
             </div>
           </div>
           <div class="fg">
             <label for="em">Email Address *</label>
-            <input type="email" id="em" placeholder="priya@example.com" required>
+            <input type="email" id="em" placeholder="chaitra@example.com" autocomplete="email" inputmode="email" maxlength="100" required>
           </div>
           <div class="fg">
             <label for="ph">Phone Number</label>
-            <input type="tel" id="ph" placeholder="+91 98765 43210">
+            <input type="tel" id="ph" placeholder="+91 98765 43210" autocomplete="tel" inputmode="tel" maxlength="20">
           </div>
           <div class="fg">
             <label for="sub">Subject</label>
@@ -643,10 +570,156 @@
             <textarea id="msg" placeholder="Tell us how we can help…" required></textarea>
           </div>
           <button type="submit" class="btn btn-primary btn-send">
-            <i class="fa-solid fa-paper-plane"></i> Send Message
+            <i class="fa-brands fa-whatsapp"></i> Send via WhatsApp
           </button>
+          <div class="cf-note">Your message opens in WhatsApp — press Send there to reach us.</div>
         </form>
-        <div id="form-ok">✅ Message sent! We'll be in touch within 24 hours.</div>
+        <div id="cf-err" role="alert"></div>
+        <output id="form-ok" for="cf">✅ WhatsApp opened with your message — press Send there to reach us.</output>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     PRIVACY POLICY
+     Anchor target for the footer "Privacy Policy" link. Content is neutral
+     boilerplate tailored to what this site ACTUALLY does today:
+       • cart + customer details live in the browser's localStorage only
+       • orders are handed off to WhatsApp — no online payment
+       • one third-party API call (postalpincode.in) for pincode → city
+       • browser Geolocation on the "Use my current location" button
+     Entries wrapped in <em class="legal-fill">[[FILL: …]]</em> MUST be filled
+     with the operator's real details before publishing.
+════════════════════════════════════ -->
+<section id="privacy" class="section legal">
+  <div class="container">
+    <div class="legal-hd fi">
+      <span class="section-tag"><i class="fa-solid fa-shield-halved"></i> Privacy</span>
+      <h2 class="section-title">Privacy <span>Policy</span></h2>
+      <p class="section-desc">
+        Complies with the DPDP Act, 2023 and the Consumer Protection (E-Commerce) Rules, 2020.
+      </p>
+    </div>
+
+    <div class="legal-body fi">
+
+      <div class="legal-tldr">
+        <strong>In short:</strong>
+        Your cart and delivery details live in your browser's <code>localStorage</code>
+        and reach us only when you tap “Place Order via WhatsApp”. No server-side
+        customer database, no analytics, no ads.
+      </div>
+
+      <div class="legal-block">
+        <h3>What we collect &amp; why</h3>
+        <p>
+          Delivery details (name, phone, address, pincode, city, notes) and cart
+          contents — used solely to fulfil the WhatsApp order you send us. Pincode
+          is looked up via <code>postalpincode.in</code> to auto-fill your city;
+          browser geolocation is used only if you tap “Use my current location”.
+          Retained by us for 24 months
+          for tax and dispute-resolution purposes. We do not collect passwords,
+          card data, or advertising identifiers, and we do not sell your data.
+        </p>
+      </div>
+
+      <div class="legal-block">
+        <h3>Grievance Officer</h3>
+        <p>
+          Chaitra ·
+          krishidakshina@gmail.com ·
+          +91 8970059754 · response within 30 days
+          of receipt.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     TERMS OF SERVICE
+     Covers Delivery Info and Returns & Refunds as sub-blocks; those footer
+     links point at #terms-delivery and #terms-returns respectively.
+════════════════════════════════════ -->
+<section id="terms" class="section legal legal--alt">
+  <div class="container">
+    <div class="legal-hd fi">
+      <span class="section-tag"><i class="fa-solid fa-file-contract"></i> Terms</span>
+      <h2 class="section-title">Terms of <span>Service</span></h2>
+      <p class="section-desc">
+        By using this site or placing an order, you agree to the terms below.
+      </p>
+    </div>
+
+    <div class="legal-body fi">
+
+      <div class="legal-block">
+        <h3>Seller</h3>
+        <p>
+          KrishiDakshina,
+          Sira, Tumkur District, India.
+          GST: 29BQAPG9900L1ZL.
+          Customer care: krishidakshina@gmail.com /
+          +91 8970059754. Disclosed per the Consumer
+          Protection (E-Commerce) Rules, 2020.
+        </p>
+      </div>
+
+      <div class="legal-block">
+        <h3>How ordering works</h3>
+        <p>
+          Prices are in INR,
+          inclusive of taxes.
+          Tapping “Place Order via WhatsApp” sends us a purchase request — a
+          contract is formed only when we confirm availability, price and slot on
+          WhatsApp. Payment:
+          COD or UPI on confirmation.
+          We do not accept or store card details. Fraudulent, automated, resale,
+          or price-tampered orders will be rejected.
+        </p>
+      </div>
+
+      <div class="legal-block" id="terms-delivery">
+        <h3>Delivery</h3>
+        <p>
+          Area:
+          Bengaluru urban, within 10 km
+          — orders outside this area are declined at confirmation. Window:
+          weekly delivery, exact slot
+          confirmed on WhatsApp. Missed-doorstep re-attempt charge:
+          no charge, one retry.
+        </p>
+      </div>
+
+      <div class="legal-block" id="terms-returns">
+        <h3>Returns &amp; refunds</h3>
+        <p>
+          Perishables (fruit, veg, dairy, bakery) are checked at the doorstep —
+          refuse anything below par and we replace or refund in full. Unopened
+          pantry items are returnable within
+          48 hours of delivery. Refunds
+          are issued within
+          5 business days of
+          verification. Claim on WhatsApp with your order number and a photo.
+        </p>
+      </div>
+
+      <div class="legal-block">
+        <h3>Liability, IP &amp; law</h3>
+        <p>
+          Products are supplied with reasonable care and meet applicable
+          food-safety norms on the day of delivery; no other warranty is given.
+          Except for the freshness guarantee above, our liability is capped at
+          the value of the affected order. The KrishiDakshina name, logo,
+          photography and site design remain our property. These terms are
+          governed by the laws of India; courts at
+          Bengaluru have
+          exclusive jurisdiction. We may update these terms; the version in force
+          on the day you order applies to that order.
+        </p>
       </div>
 
     </div>
@@ -670,7 +743,7 @@
               <circle cx="12" cy="12" r="2" fill="rgba(255,255,255,.6)"/>
             </svg>
           </div>
-          Gut Point
+          KrishiDakshina
         </a>
         <p>Bringing farm-fresh goodness to your table. Trusted by thousands of families across India every week.</p>
         <div class="socials">
@@ -689,7 +762,6 @@
           <li><a href="#products">Products</a></li>
           <li><a href="#about">About Us</a></li>
           <li><a href="#contact">Contact</a></li>
-          <li><a href="#contact">Order Now</a></li>
         </ul>
       </div>
 
@@ -699,7 +771,7 @@
           <li><a href="#products">Fruits &amp; Vegetables</a></li>
           <li><a href="#products">Dairy &amp; Eggs</a></li>
           <li><a href="#products">Bakery</a></li>
-          <li><a href="#products">Organic Range</a></li>
+          <li><a href="#contact">Book Harvest Slot</a></li>
           <li><a href="#products">Pantry Staples</a></li>
         </ul>
       </div>
@@ -708,20 +780,18 @@
         <div class="fc-title">Help</div>
         <ul class="fc-links">
           <li><a href="#contact">Track Your Order</a></li>
-          <li><a href="#contact">Returns &amp; Refunds</a></li>
-          <li><a href="#contact">Delivery Info</a></li>
-          <li><a href="#contact">Privacy Policy</a></li>
-          <li><a href="#contact">Terms of Service</a></li>
+          <li><a href="#terms-returns">Returns &amp; Refunds</a></li>
+          <li><a href="#terms-delivery">Delivery Info</a></li>
         </ul>
       </div>
 
     </div>
 
     <div class="footer-bot">
-      <span>© <span id="yr"></span> Gut Point. All rights reserved.</span>
+      <span>© <span id="yr"></span> KrishiDakshina. All rights reserved.</span>
       <span>Made with ❤️ in India &nbsp;·&nbsp;
-        <a href="#contact">Privacy</a> &nbsp;·&nbsp;
-        <a href="#contact">Terms</a>
+        <a href="#privacy">Privacy</a> &nbsp;·&nbsp;
+        <a href="#terms">Terms</a>
       </span>
     </div>
   </div>
@@ -744,66 +814,189 @@
     </div>
   </div>
   <div class="cart-foot is-hidden" id="cartFoot">
-    <!-- Delivery details (persisted in localStorage under gutpoint.customer.v1) -->
-    <div class="deliv-form" id="delivForm">
-      <div class="deliv-title">
-        <i class="fa-solid fa-truck-fast cart-title-ico"></i>Delivery details
-      </div>
-      <div class="deliv-fields">
-        <div class="deliv-fg">
-          <label for="dName">Name *</label>
-          <input id="dName" type="text" maxlength="100" autocomplete="name" required>
-        </div>
-        <div class="deliv-fg">
-          <label for="dPhone">Phone *</label>
-          <input id="dPhone" type="tel" inputmode="tel" maxlength="20" autocomplete="tel" placeholder="10-digit mobile" required>
-        </div>
-        <div class="deliv-fg deliv-fg--full">
-          <label for="dAddr1">Address line 1 *</label>
-          <input id="dAddr1" type="text" maxlength="200" autocomplete="address-line1" required>
-        </div>
-        <div class="deliv-fg deliv-fg--full">
-          <label for="dAddr2">Landmark / apt (optional)</label>
-          <input id="dAddr2" type="text" maxlength="200" autocomplete="address-line2">
-        </div>
-        <div class="deliv-fg">
-          <label for="dPincode">Pincode *</label>
-          <input id="dPincode" type="text" inputmode="numeric" maxlength="6" autocomplete="postal-code" pattern="[1-9][0-9]{5}" required>
-        </div>
-        <div class="deliv-fg">
-          <label for="dCity">City *</label>
-          <input id="dCity" type="text" maxlength="100" autocomplete="address-level2" required>
-        </div>
-        <div class="deliv-fg deliv-fg--full">
-          <label for="dNotes">Delivery notes (optional)</label>
-          <textarea id="dNotes" maxlength="500" rows="2" placeholder="Gate code, floor, best time…"></textarea>
-        </div>
-      </div>
-      <button type="button" class="btn-geo" id="btnGeo">
-        <i class="fa-solid fa-location-crosshairs"></i>
-        <span id="geoLabel">Use my current location</span>
-      </button>
-      <p class="deliv-hint" id="delivHint"><output aria-live="polite"></output></p>
+    <div class="checkout-steps" aria-label="Checkout steps">
+      <button class="step-chip is-active" id="stepReview" type="button" aria-controls="cartReviewPanel" aria-pressed="true">1. Cart</button>
+      <button class="step-chip" id="stepDelivery" type="button" aria-controls="cartDeliveryPanel" aria-pressed="false">2. Delivery</button>
     </div>
 
-    <div class="cart-total">
-      <span>Total</span>
-      <span id="cartTotal">&#8377;0</span>
+    <div id="cartReviewPanel">
+      <div class="cart-total">
+        <span>Total</span>
+        <span id="cartTotal">&#8377;0</span>
+      </div>
+      <button class="btn-review-next" id="btnToDelivery" type="button">
+        <i class="fa-solid fa-truck-fast"></i>
+        Confirm Items &amp; Continue
+      </button>
+      <button class="btn-clear-cart" id="btnClearCart" type="button">
+        <i class="fa-solid fa-trash-can"></i> Clear cart
+      </button>
     </div>
-    <button class="btn-wa-order" id="btnWaOrder" disabled>
-      <i class="fa-brands fa-whatsapp wa-ico-md"></i>
-      Place Order via WhatsApp
-    </button>
-    <button class="btn-clear-cart" id="btnClearCart">
-      <i class="fa-solid fa-trash-can"></i> Clear cart
-    </button>
+
+    <div class="is-hidden" id="cartDeliveryPanel">
+      <div class="deliv-summary">
+        <span>Order Total</span>
+        <strong id="cartTotalDelivery">&#8377;0</strong>
+      </div>
+
+      <!-- Delivery details (persisted in localStorage under krishidakshina.customer.v1) -->
+      <div class="deliv-form" id="delivForm">
+        <div class="deliv-title">
+          <i class="fa-solid fa-truck-fast cart-title-ico"></i>Delivery details
+        </div>
+        <div class="deliv-fields">
+          <div class="deliv-fg">
+            <label for="dName">Name *</label>
+            <input id="dName" type="text" maxlength="100" autocomplete="name" required>
+          </div>
+          <div class="deliv-fg">
+            <label for="dPhone">Phone *</label>
+            <input id="dPhone" type="tel" inputmode="tel" maxlength="20" autocomplete="tel" placeholder="10-digit mobile" required>
+          </div>
+          <div class="deliv-fg deliv-fg--full">
+            <label for="dAddr1">Address line 1 *</label>
+            <input id="dAddr1" type="text" maxlength="200" autocomplete="address-line1" required>
+          </div>
+          <div class="deliv-fg deliv-fg--full">
+            <label for="dAddr2">Landmark / apt (optional)</label>
+            <input id="dAddr2" type="text" maxlength="200" autocomplete="address-line2">
+          </div>
+          <div class="deliv-fg">
+            <label for="dPincode">Pincode *</label>
+            <input id="dPincode" type="text" inputmode="numeric" maxlength="6" autocomplete="postal-code" pattern="[1-9][0-9]{5}" required>
+          </div>
+          <div class="deliv-fg">
+            <label for="dCity">City *</label>
+            <input id="dCity" type="text" maxlength="100" autocomplete="address-level2" required>
+          </div>
+          <div class="deliv-fg deliv-fg--full">
+            <label for="dNotes">Delivery notes (optional)</label>
+            <textarea id="dNotes" maxlength="500" rows="2" placeholder="Gate code, floor, best time…"></textarea>
+          </div>
+        </div>
+        <button type="button" class="btn-geo" id="btnGeo">
+          <i class="fa-solid fa-location-crosshairs"></i>
+          <span id="geoLabel">Use my current location</span>
+        </button>
+        <p class="deliv-hint" id="delivHint"><output aria-live="polite"></output></p>
+      </div>
+
+      <p class="deliv-agree">
+        By placing this order you agree to our
+        <a href="#terms">Terms</a> and
+        <a href="#privacy">Privacy Policy</a>.
+      </p>
+
+      <button class="btn-wa-order" id="btnWaOrder" disabled>
+        <i class="fa-brands fa-whatsapp wa-ico-md"></i>
+        Place Order via WhatsApp
+      </button>
+      <button class="btn-back-cart" id="btnBackToCart" type="button">
+        <i class="fa-solid fa-arrow-left"></i>
+        Back to cart items
+      </button>
+    </div>
   </div>
 </div>
+
+<!--
+  ─────────────────────────────────────────────────────────────
+  DRAFT — "View Terms / Privacy" modal (native <dialog>).
+  Not active. Kept commented so it doesn't affect the live page.
+
+  Enabling steps (later):
+    1. Uncomment this whole block.
+    2. Uncomment the .legal-dialog CSS block in index.css.
+    3. Uncomment the initLegalDialogs() block in index.js.
+    4. Optionally add a required checkbox next to the trigger
+       and gate #btnWaOrder on it (hard consent before order).
+
+  The dialog body is populated at open-time from the on-page
+  #privacy / #terms sections so those sections remain the single
+  source of truth. See index.js for the hydration helper.
+  ─────────────────────────────────────────────────────────────
+
+  <p class="deliv-agree">
+    By placing this order you agree to our
+    <button type="button" class="link-btn" data-open="terms-dialog">Terms of Service</button>
+    and
+    <button type="button" class="link-btn" data-open="privacy-dialog">Privacy Policy</button>.
+  </p>
+
+  <dialog id="terms-dialog" class="legal-dialog" aria-labelledby="terms-dialog-title">
+    <header class="legal-dialog-hd">
+      <h2 id="terms-dialog-title">Terms of Service</h2>
+      <button type="button" class="legal-dialog-close" data-close aria-label="Close">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+    </header>
+    <div class="legal-dialog-body" id="terms-dialog-body"></div>
+    <footer class="legal-dialog-ft">
+      <button type="button" class="btn btn-dark" data-close>Close</button>
+    </footer>
+  </dialog>
+
+  <dialog id="privacy-dialog" class="legal-dialog" aria-labelledby="privacy-dialog-title">
+    <header class="legal-dialog-hd">
+      <h2 id="privacy-dialog-title">Privacy Policy</h2>
+      <button type="button" class="legal-dialog-close" data-close aria-label="Close">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+    </header>
+    <div class="legal-dialog-body" id="privacy-dialog-body"></div>
+    <footer class="legal-dialog-ft">
+      <button type="button" class="btn btn-dark" data-close>Close</button>
+    </footer>
+  </dialog>
+
+-->
 
 <!-- Scroll-to-top -->
 <button id="top-btn" aria-label="Back to top">
   <i class="fa-solid fa-chevron-up"></i>
 </button>
+
+<!-- ══════════════════════════════════
+     PRODUCT IMAGE ZOOM DIALOG
+     Standard e-commerce lightbox: tap any product image → opens
+     fit-to-screen; tap the enlarged image once more → toggles 2×
+     zoom with pan; ESC / backdrop / ✕ button closes.
+     Populated at open-time from the clicked <img>'s src + alt so
+     one dialog serves every product card. Native <dialog> handles
+     focus trap, backdrop, and ESC for free.
+════════════════════════════════════ -->
+<dialog id="zoomDialog" class="zoom-dialog" aria-labelledby="zoomDialogTitle">
+  <button type="button" class="zoom-close" id="zoomClose" aria-label="Close image">
+    <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+  </button>
+
+  <!-- Previous / next arrows appear only when the product has more than
+       one image (JS toggles .is-hidden on them). Kept outside the stage
+       so they float over any zoom state and don't affect scroll geometry. -->
+  <button type="button" class="zoom-nav zoom-prev is-hidden" id="zoomPrev" aria-label="Previous image">
+    <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+  </button>
+  <button type="button" class="zoom-nav zoom-next is-hidden" id="zoomNext" aria-label="Next image">
+    <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+  </button>
+
+  <!-- "2 / 4" pill, top-left corner. Hidden for single-image products. -->
+  <div class="zoom-counter is-hidden" id="zoomCounter" aria-live="polite"></div>
+
+  <div class="zoom-stage" id="zoomStage">
+    <img id="zoomImage" alt="" decoding="async">
+  </div>
+  <p id="zoomDialogTitle" class="zoom-caption" aria-live="polite"></p>
+
+  <!-- Thumbnail strip. JS populates one .zoom-thumb per gallery image.
+       Hidden entirely when the product has a single image. -->
+  <div class="zoom-thumbs is-hidden" id="zoomThumbs" role="tablist" aria-label="Product images"></div>
+
+  <p class="zoom-hint" aria-hidden="true">
+    <i class="fa-solid fa-magnifying-glass-plus"></i>
+    Tap image to zoom
+  </p>
+</dialog>
 
 <script src="index.js" defer></script>
 </body>
